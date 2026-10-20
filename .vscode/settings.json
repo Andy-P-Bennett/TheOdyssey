@@ -1,3 +1,4 @@
 {
-    "mplab.clangd.compileCommandsDir": "${workspaceFolder}/_build/TheOdyssey/default"
+    "mplab.clangd.compileCommandsDir": "${workspaceFolder}/_build/TheOdyssey/default",
+    "cmake.sourceDirectory": "/Users/andy/Documents/GitHub/TheOdyssey/cmake/TheOdyssey/default"
 }
