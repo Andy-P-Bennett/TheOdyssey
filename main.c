@@ -1,5 +1,5 @@
 #include "xc.h"
-#include "FSM.h"
+// #include "FSM.h"
 #include "motor.h"
 #pragma config FNOSC = FRC //8 MHz oscillator
 
@@ -118,6 +118,6 @@ int main(void) {
             drive(0,0);
             // mileState = IDLE;
             break;
-
+        }
     }
 }

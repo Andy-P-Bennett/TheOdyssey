@@ -3,9 +3,11 @@
     "configurations": [
         {
             "name": "default",
-            "id": "conf1",
+            "id": "",
             "device": "PIC24F16KA301",
             "imagePath": "./out/TheOdyssey/default.elf",
+            "toolProperties": "default-tool-base",
+            "tool": "Snap",
             "packs": [
                 {
                     "name": "PIC24F-KA-KL-KM_DFP",
@@ -14,14 +16,25 @@
                 }
             ],
             "fileSet": "default",
-            "toolchain": "default-XC16"
+            "toolchain": "default-XC16",
+            "userVariables": "default-uservariables"
         }
     ],
     "propertyGroups": [
         {
+            "name": "default-uservariables",
+            "type": "uservariables",
+            "properties": {}
+        },
+        {
             "name": "default-XC16",
             "type": "toolchain",
             "provider": "microchip.toolchains:xc16@2.10",
+            "properties": {}
+        },
+        {
+            "name": "default-tool-base",
+            "type": "tool",
             "properties": {}
         }
     ],
