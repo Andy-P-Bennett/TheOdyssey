@@ -1,4 +1,4 @@
 #ifndef motor
 #define motor
-void drive(int speed_left, int speed_right);
+void drive(float speed_left, float speed_right);
 #endif

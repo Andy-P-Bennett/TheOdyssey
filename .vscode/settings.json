@@ -1,4 +1,11 @@
 {
     "mplab.clangd.compileCommandsDir": "${workspaceFolder}/_build/TheOdyssey/default",
-    "cmake.sourceDirectory": "/Users/andy/Documents/GitHub/TheOdyssey/cmake/TheOdyssey/default"
+    "cmake.sourceDirectory": "/Users/andy/Documents/GitHub/TheOdyssey/cmake/TheOdyssey/default",
+    "memory-inspector.debugTypes": [
+        "arm-debugger",
+        "embedded-debug",
+        "gdb",
+        "gdbtarget",
+        "mplab-core-da"
+    ]
 }
