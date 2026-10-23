@@ -3,10 +3,11 @@
 #include "motor.h"
 #pragma config FNOSC = FRC //8 MHz oscillator
 #pragma config FWDTEN = OFF // Disable watchdog timer while testing
+//...otherwise, the robot resets every like 3 minutes and acts possessed
 
-int stepsTaken = 0;
-int steps2Taken = 0;
-int timesUp = 0;
+volatile int stepsTaken = 0;
+volatile int steps2Taken = 0;
+volatile int timesUp = 0;
 
 void __attribute__((interrupt, no_auto_psv)) _OC1Interrupt(void) {
     _OC1IF = 0; // Clear the interrupt flag
@@ -16,6 +17,9 @@ void __attribute__((interrupt, no_auto_psv)) _OC2Interrupt(void) {
     _OC2IF = 0; // Clear the interrupt flag
     steps2Taken++;
 }
+
+// This timer is not yet fully initialized. Do so before using it.
+// Note that timers 2/3 are used for the stepper PWM.
 void __attribute__((interrupt, no_auto_psv)) _T1Interrupt(void) {
     _T1IF = 0; // Clear the interrupt flag
     timesUp = 1;
@@ -25,18 +29,23 @@ int main(void) {
     ANSA = 0;
     TRISA = 0;
     LATA = 0;
+    ANSB = 0;
+    TRISB = 0;
+    LATB = 0;
     _RCDIV = 0;
 
     TRISAbits.TRISA0 = 0; //pin 2 DO - Left Stepper dir pin
     TRISAbits.TRISA1 = 0; // pin 3 DO - Right Stepper dir pin
-    TRISAbits.TRISA2 = 1; // pin 7 DI - unused
+    // TRISAbits.TRISA2 = 1; // pin 7 DI - unused
     
     // LATAbits.LATA1 = 0; //lo enable stepper  - we don't need enable, just set pwm
    
     OC1CON1 = 0;
     OC1CON2 = 0;
     
-    OC1CON1bits.OCTSEL = 0b111;
+    OC1CON1bits.OCTSEL = 0b000; //select timer 2 for left stepper pwm
+    T2CONbits.TCKPS = 0b10; //prescaler 64:1 ~ 62.5kHz, 16 us per tick
+    T2CONbits.TON = 1; //turn on timer 2
     OC1CON2bits.SYNCSEL = 0b11111;
     OC1CON2bits.OCTRIG = 0;
     
@@ -52,7 +61,9 @@ int main(void) {
     OC2CON1 = 0;
     OC2CON2 = 0;
     
-    OC2CON1bits.OCTSEL = 0b111;
+    OC2CON1bits.OCTSEL = 0b001; //select timer 3 for right stepper pwm
+    T3CONbits.TCKPS = 0b10; //prescaler 64:1 
+    T3CONbits.TON = 1; //turn on timer 3
     OC2CON2bits.SYNCSEL = 0b11111;
     OC2CON2bits.OCTRIG = 0;
     
@@ -72,8 +83,7 @@ int main(void) {
 
     enum milestoneStateEnum {IDLE, FORWARD, LEFT, FORWARD_2, TURN_180, FORWARD_3, STOP};
     enum milestoneStateEnum mileState = IDLE;
-    drive(-1,1);
-    while(0) {
+    while(1) {
         // fsm() - this is how we'll do things in real code
         // below is the milestone fsm for simplicity, delete after milestone.
         
@@ -115,7 +125,7 @@ int main(void) {
             if (stepsTaken > 1000) {
                 mileState = STOP;
                 stepsTaken = 0;
-                // drive(0,0);
+                drive(0,0);
             }
             break;
         case STOP:
