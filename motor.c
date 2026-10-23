@@ -19,7 +19,7 @@ void drive(float speed_left, float speed_right) {
     // max speed is ~3 rev/s with 1.8 degree per pwm osc - 200 ticks per rev in full step mode
     // T2/3 1:64 prescalar 62.5kHz, 16 us per tick. 200 tick * ~3 rev/s = 600 ticks/sec (max speed from signal generator)
     // 62500 / 600 =  104.167, this is period for max speed ~ less period is faster speed
-    // 62500 / ? = 65534 -> ? = 0.954 hz (steps/sec)-> 0.954 steps/sec / 200 steps/ rev = 
+    // 62500 / ? = 65534 -> ? = 0.954 hz (steps/sec)-> 0.954 steps/sec / 200 steps/rev = 
     // 0.00477 rev/sec, this is the slowest speed we can do with 16 bit timer
     float period1, period2;
 
@@ -39,8 +39,8 @@ void drive(float speed_left, float speed_right) {
     OC1RS = (unsigned int) (period1);
     OC1R = OC1RS/2;
 
-    // set the direction pins and pwm period for each stepper
-    if (speed_right < 0) {_LATA1 = 1;} else {_LATA1 = 0;};
+    // set the direction pins and pwm period for each stepper - PROBLEM PIN
+    if (speed_right < 0) {_LATB0 = 1;} else {_LATB0 = 0;};
     if (speed_right == 0) {OC2CON1bits.OCM=  0b000;} else {OC2CON1bits.OCM=  0b110;};
     period2 = TIMER_HZ / (STEPS_PER_REV * fabsf(speed_right));
     if (period2 > 65535.0f) {period2 = 65535.0f;};
