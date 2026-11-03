@@ -12,3 +12,4 @@ cmake/**/CMake*
 out/
 .vscode/settings.json
 .DS_Store
+**/.DS_Store
