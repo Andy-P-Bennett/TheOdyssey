@@ -35,7 +35,7 @@ int main(void) {
     _RCDIV = 0;
 
     TRISAbits.TRISA0 = 0; //pin 2 DO - Left Stepper dir pin
-    TRISBbits.TRISB0 = 0; // pin 4 DO - Right Stepper dir pin PROBLEM PIN
+    TRISBbits.TRISB1 = 0; // pin 5 DO - Right Stepper dir pin PROBLEM PIN
     TRISAbits.TRISA2 = 1; // pin 7 DI - start program
     
     // LATAbits.LATA1 = 0; //lo enable stepper  - we don't need enable, just set pwm
@@ -83,8 +83,10 @@ int main(void) {
 
     enum milestoneStateEnum {IDLE, FORWARD, LEFT, FORWARD_2, TURN_180, FORWARD_3};
     enum milestoneStateEnum mileState = IDLE;
-    drive(-2,-2); //start with motors in reverse
-    while(1) {
+    // _LATB1 = 1;
+    // while(1) {}
+    // drive(-2,-2); //start with motors in reverse
+    while(0) {
         //if pin7 high, go forward, else go reverse
         if (PORTAbits.RA2 == 1) {
             drive(2,2);
@@ -92,7 +94,7 @@ int main(void) {
             drive(-2,-2);
         }
     }
-    while(0) {
+    while(1) {
         // fsm() - this is how we'll do things in real code
         // below is the milestone fsm for simplicity, delete after milestone.
         
@@ -113,7 +115,7 @@ int main(void) {
             }
             break;
         case LEFT:
-            if (stepsTaken > 400) {
+            if (stepsTaken > 120) {
                 mileState = FORWARD_2;
                 stepsTaken = 0;
                 drive(1,1);
@@ -127,7 +129,7 @@ int main(void) {
             }
             break;
         case TURN_180:
-            if (stepsTaken > 400) {
+            if (stepsTaken > 240) {
                 mileState = FORWARD_3;
                 stepsTaken = 0;
                 drive(1,1);
