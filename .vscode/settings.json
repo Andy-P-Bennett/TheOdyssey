@@ -1,5 +1,6 @@
 {
     "mplab.clangd.compileCommandsDir": "${workspaceFolder}/_build/TheOdyssey/default",
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/_build/TheOdyssey/default/compile_commands.json",
     "cmake.sourceDirectory": "/Users/andy/Documents/GitHub/TheOdyssey/cmake/TheOdyssey/default",
     "memory-inspector.debugTypes": [
         "arm-debugger",

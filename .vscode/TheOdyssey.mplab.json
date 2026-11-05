@@ -30,7 +30,24 @@
             "name": "default-XC16",
             "type": "toolchain",
             "provider": "microchip.toolchains:xc16@2.10",
-            "properties": {}
+            "properties": {
+                "compiler.extra-include-directories": [
+                    "c:/Program Files/Microchip/xc16/v2.10/support/PIC24F/h",
+                    "c:/Program Files/Microchip/xc16/v2.10/support/generic/h"
+                ],
+                "global.common-include-directories": [
+                    "c:/Program Files/Microchip/xc16/v2.10/support/PIC24F/h",
+                    "c:/Program Files/Microchip/xc16/v2.10/support/generic/h"
+                ],
+                "assembler.extra-include-directories-for-assembler": [
+                    "c:/Program Files/Microchip/xc16/v2.10/support",
+                    "c:/Program Files/Microchip/xc16/v2.10/support/PIC24F/h",
+                    "c:/Program Files/Microchip/xc16/v2.10/support/generic/h"
+                ],
+                "linker.extra-lib-directories": [
+                    "c:/Program Files/Microchip/xc16/v2.10/support/PIC24F/h"
+                ]
+            }
         },
         {
             "name": "default-tool-base",
