@@ -4,7 +4,7 @@
 #include <math.h>
 
 
-#pragma config FNOSC = FRC //8 MHz oscillator
+//#pragma config FNOSC = FRC //8 MHz oscillator
 
 
 //int TMR1 = 0;
@@ -90,29 +90,6 @@ int main(void) {
 
 
 
-    _RCDIV = 0;
-    
-    // set up pin 14 as PWM
-    OC1CON1 = 0;
-    OC1CON2 = 0;
-    OC1CON2bits.SYNCSEL = 0x1F;
-    OC1CON1bits.OCTSEL = 0b111;
-    OC1CON1bits.OCM = 0b110;
-    OC1CON2bits.OCTRIG = 0;
-    _OC1IP = 4; // set priority for OC1 interrupt
-    _OC1IF = 0; // clear OC1 flag
-    _OC1IE = 1; // enable interrupt on OC1
-    
-    
-    // set pin 2 as digital input
-    _ANSA0 = 0;
-    _TRISA0 = 1;
-
-    
-    // set pin 4 as digital output
-    _ANSB0 = 0;
-    _TRISB0 = 0;
-    
     // set up states
     
     while (1) {
