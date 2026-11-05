@@ -7,8 +7,6 @@
 //#pragma config FNOSC = FRC //8 MHz oscillator
 
 
-//int TMR1 = 0;
-
 enum m1_states {stop, straight, adjust_left, adjust_right, turn_left, turn_right}
 enum m1_states dir = stop;
 
@@ -70,10 +68,15 @@ enum m1_states dir = stop;
     
     
     // set motor direction pins as digital outputs----------------------------------
-    _TRISB8 = 0; // set RB8 to digital
-    _ANSB8 = 0; //Set RB8 as output
-    _TRISB9 = 0; // set RB9 to digital
-    _ANSB9 = 0; //Set RB9 as output
+    _TRISB8 = 0; // set RB8 to digital output
+    _ANSB8 = 0; 
+    _TRISB9 = 0; // set RB9 to digital output
+    _ANSB9 = 0; 
+
+    qrd_left == ADC1BUF14;
+    qrd_right == ADC1BUF4;
+    qrd_center == ADC1BUF13;
+    qrd_intersection == ADC1BUF12;
 
     
         if ((ADC1BUF4 >= 1 * 309.303 && ADC1BUF0 <= 1 * 309.303) || (ADC1BUF4 <= 1 * 309.303 && ADC1BUF0 >= 1 * 309.303)) { // set threshold to 1 V
@@ -88,14 +91,12 @@ enum m1_states dir = stop;
 
 int main(void) {
 
-
-
-    // set up states
+// set up states
     
     while (1) {
         switch (dir) {
             case (stop):
-                if (QRD intersection is black AND QRD right is black AND QRD left is black AND QRD center is white) {
+                if (I and R and L are black AND C is white) {
                     dir = straight; // switch to drive straight
                     //code to drive_straight
                 }
@@ -103,12 +104,12 @@ int main(void) {
             
             case (straight):
                 if (L and I are white and R is black) {
-                    dir = turn_left;
+                    dir = turn_left; //start turning left
                     //code to turn left 90 degrees
 
                 }
                 else if (L and I are black and R is white) {
-                    dir = turn_right;
+                    dir = turn_right; //start turning right
                     //code to turn right 90 degrees
 
                 }
