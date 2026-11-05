@@ -83,10 +83,9 @@ enum m1_states dir = stop;
 //-------------------------------------------------------------------------
 
 
-int main(void) {
+void line_following() {
 
 // set up states
-    
     while (1) {
         switch (dir) {
             case (stop):
@@ -94,6 +93,7 @@ int main(void) {
                 //Int, Left, Right are black, and Center is white    
                     dir = straight; // switch to drive straight
                     //code to drive_straight
+                    drive(0.5, 0.5);
                 }
                 break;
             
@@ -102,30 +102,34 @@ int main(void) {
                 //Left and Int are white, and Right is black
                     dir = turn_left; //start turning left
                     //code to turn left 90 degrees
+                    drive(-0.5, 0.5);
 
                 }
                 else if ((qrd_left <= 1 * 309.303) && (qrd_intersection <= 1 * 309.303) && (qrd_right >= 1 * 309.303)) {
                 //Left and Int are black, and Right is white
                     dir = turn_right; //start turning right
                     //code to turn right 90 degrees
-
+                    drive(0.5, -0.5);
                 }
                 else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left >= 1 * 309.303)) {
                     //Int and Right are black, and Left is white
                     dir = adjust_left; //start turning to the left
                     //code to adjust to the left slightly
+                    drive(-0.5, 0.5);
                 }
             
                 else if ((qrd_intersection <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_right >= 1 * 309.303)) {
                 //Int and Left are black, and Right is white
                     dir = adjust_right; //start turning to the right
                     //code to adjust to the right slightly
+                    drive(0.5, -0.5);
                 }
 
                 else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
                 //Int, Left, Right, and Center are black
                     dir = stop; //stop the motors
                     //code to stop motors
+                    drive(0, 0);
                 }
                 break;
                 
@@ -134,11 +138,13 @@ int main(void) {
                 //Left and Right are black, and Center is white   
                     dir = straight; //switch to drive straight
                     //code to drive straight
+                    drive(0.5, 0.5);
                 }
                 else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
                 //Int, Left, Right, and Center are black    
                     dir = stop; //switch to stop
                     //code to stop
+                    drive(0, 0);
                 }
                 break;
                 
@@ -147,11 +153,13 @@ int main(void) {
                 //Left and Right are black, and Center is white   
                     dir = straight; //switch to drive straight
                     //code to drive straight
+                    drive(0.5, 0.5);
                 }
                 else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
                 //Int, Left, Right, and Center are black    
                     dir = stop;
                     //code to stop
+                    drive(0, 0);
                 }
                 break;
                 
@@ -161,11 +169,13 @@ int main(void) {
                 //Left and Right are black, and Center is white    
                     dir = straight;
                     //code to drive_straight
+                    drive(0.5, 0.5);
                 }
                 else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
                 //Int, Left, Right, and Center are black   
                     dir = stop;
                     //code to stop
+                    drive(0, 0);
                 }
                 break;
 
@@ -174,11 +184,13 @@ int main(void) {
                 //Left and Right are black, and Center is white    
                     dir = straight;
                     //code to drive_straight
+                    drive(0.5, 0.5);
                 }
                 else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
                 //Int, Left, Right, and Center are black   
                     dir = stop;
                     //code to stop
+                    drive(0, 0);
                 }
                 break;
         }
