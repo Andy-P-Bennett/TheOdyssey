@@ -78,12 +78,6 @@ enum m1_states dir = stop;
     qrd_center == ADC1BUF13;
     qrd_intersection == ADC1BUF12;
 
-    
-        if ((ADC1BUF4 >= 1 * 309.303 && ADC1BUF0 <= 1 * 309.303) || (ADC1BUF4 <= 1 * 309.303 && ADC1BUF0 >= 1 * 309.303)) { // set threshold to 1 V
-            _LATB15 = 1;
-        }else {
-            _LATB15 = 0;
-        }
  
 
 //-------------------------------------------------------------------------
@@ -96,56 +90,66 @@ int main(void) {
     while (1) {
         switch (dir) {
             case (stop):
-                if (I and R and L are black AND C is white) {
+                if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center >= 1 * 309.303)) {
+                //Int, Left, Right are black, and Center is white    
                     dir = straight; // switch to drive straight
                     //code to drive_straight
                 }
                 break;
             
             case (straight):
-                if (L and I are white and R is black) {
+                if ((qrd_left >= 1 * 309.303) && (qrd_intersection >= 1 * 309.303) && (qrd_right <= 1 * 309.303)) {
+                //Left and Int are white, and Right is black
                     dir = turn_left; //start turning left
                     //code to turn left 90 degrees
 
                 }
-                else if (L and I are black and R is white) {
+                else if ((qrd_left <= 1 * 309.303) && (qrd_intersection <= 1 * 309.303) && (qrd_right >= 1 * 309.303)) {
+                //Left and Int are black, and Right is white
                     dir = turn_right; //start turning right
                     //code to turn right 90 degrees
 
                 }
-                else if (I and R are black and L is white) {
-                    dir = adjust_right;
-                    //code to adjust to the right slightly
-                }
-            
-                else if (I and L are black and R is white) {
-                    dir = adjust_left;
+                else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left >= 1 * 309.303)) {
+                    //Int and Right are black, and Left is white
+                    dir = adjust_left; //start turning to the left
                     //code to adjust to the left slightly
                 }
+            
+                else if ((qrd_intersection <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_right >= 1 * 309.303)) {
+                //Int and Left are black, and Right is white
+                    dir = adjust_right; //start turning to the right
+                    //code to adjust to the right slightly
+                }
 
-                else if (I and R and L and C are black) {
-                    dir = stop;
+                else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
+                //Int, Left, Right, and Center are black
+                    dir = stop; //stop the motors
                     //code to stop motors
                 }
                 break;
                 
             case (adjust_left):
-                if (L and R are black and C is white) {
-                    dir = straight;
+                if ((qrd_left <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_center >= 1 * 309.303)) {
+                //Left and Right are black, and Center is white   
+                    dir = straight; //switch to drive straight
                     //code to drive straight
                 }
-                else if (I and R and L and C are black) {
-                    dir = stop;
+                else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
+                //Int, Left, Right, and Center are black    
+                    dir = stop; //switch to stop
                     //code to stop
                 }
                 break;
                 
             case (adjust_right):
-                if (L and R are black and C is white) {
-                    dir = straight;
+                if ((qrd_left <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_center >= 1 * 309.303)) {
+                //Left and Right are black, and Center is white   
+                    dir = straight; //switch to drive straight
                     //code to drive straight
                 }
-                else if (I and R and L and C are black) {
+                else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
+                //Int, Left, Right, and Center are black    
                     dir = stop;
                     //code to stop
                 }
@@ -153,22 +157,26 @@ int main(void) {
                 
             
             case (turn_left):
-                if (L and R are black and C is white) {
+                if ((qrd_left <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_center >= 1 * 309.303)) {
+                //Left and Right are black, and Center is white    
                     dir = straight;
                     //code to drive_straight
                 }
-                else if (I and R and L and C are black) {
+                else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
+                //Int, Left, Right, and Center are black   
                     dir = stop;
                     //code to stop
                 }
                 break;
 
             case (turn_right):
-                if (L and R are black and C is white) {
+                if ((qrd_left <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_center >= 1 * 309.303)) {
+                //Left and Right are black, and Center is white    
                     dir = straight;
                     //code to drive_straight
                 }
-                else if (I and R and L and C are black) {
+                else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
+                //Int, Left, Right, and Center are black   
                     dir = stop;
                     //code to stop
                 }
