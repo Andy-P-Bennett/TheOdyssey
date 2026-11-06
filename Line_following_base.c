@@ -61,12 +61,12 @@ void qrd_init(void) {
 //-------------------------------------------------------------------------
 enum m1_states dir = stop;
 enum m1_states prev_state = stop;
-#define THRESH 1000
+#define THRESH 500
 #define BLACK(x) ((x) > THRESH)
 #define WHITE(x) ((x) < THRESH)
-#define full_speed 0.5
-#define adjust_speed 0.3
-#define turn_speed 0
+#define full_speed 0.8
+#define adjust_speed 0.4
+#define turn_speed 0.2
 void line_following_fsm(void) {
 
     int qrd_left = ADC1BUF14;
@@ -138,10 +138,10 @@ void line_following_fsm(void) {
                 dir = adjust_right; //small adjustment right
                 drive(full_speed, adjust_speed); // slow right wheel to slight turn right
             }
-            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
-                dir = stop; // stop when completely missing the line
-                drive(0, 0);
-            }
+            // else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+            //     dir = stop; // stop when completely missing the line
+            //     drive(0, 0);
+            // }
             break;
             
         case (adjust_left):
@@ -168,10 +168,10 @@ void line_following_fsm(void) {
                 dir = adjust_right; //small adjustment right
                 drive(full_speed, adjust_speed); // slow right wheel to slight turn right
             }
-            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
-                dir = stop; // stop when completely missing the line
-                drive(0, 0);
-            }
+            // else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+            //     dir = stop; // stop when completely missing the line
+            //     drive(0, 0);
+            // }
             break;
 
         case (adjust_right):
@@ -198,10 +198,10 @@ void line_following_fsm(void) {
                 dir = straight; //small adjustment right
                 drive(full_speed, full_speed); // slow right wheel to slight turn right
             }
-            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
-                dir = stop; // stop when completely missing the line
-                drive(0, 0);
-            }
+            // else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+            //     dir = stop; // stop when completely missing the line
+            //     drive(0, 0);
+            // }
             break;
 
         case (turn_left):
@@ -227,10 +227,10 @@ void line_following_fsm(void) {
                 dir = adjust_right; //small adjustment right
                 drive(full_speed, adjust_speed); // slow right wheel to slight turn right
             }
-            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
-                dir = stop; // stop when completely missing the line
+            // else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+            //     dir = stop; // stop when completely missing the line
                 drive(0, 0);
-            }
+            // }
         case (turn_right):
             prev_state = turn_right;
             if ((WHITE(qrd_left)) && (WHITE(qrd_center)) && (BLACK(qrd_right))) {
@@ -254,9 +254,9 @@ void line_following_fsm(void) {
                 dir = adjust_right; //small adjustment right
                 drive(full_speed, adjust_speed); // slow right wheel to slight turn right
             }
-            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
-                dir = stop; // stop when completely missing the line
-                drive(0, 0);
-            };
+            // else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+            //     dir = stop; // stop when completely missing the line
+            //     drive(0, 0);
+            // };
     }
 }
