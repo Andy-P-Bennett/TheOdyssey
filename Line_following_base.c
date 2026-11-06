@@ -7,7 +7,7 @@
 //#pragma config FNOSC = FRC //8 MHz oscillator
 
 
-enum m1_states {stop, straight, adjust_left, adjust_right, turn_left, turn_right}
+enum m1_states {stop, straight, adjust_left, adjust_right, turn_left, turn_right};
 enum m1_states dir = stop;
 
 
@@ -82,14 +82,14 @@ enum m1_states dir = stop;
 
 //-------------------------------------------------------------------------
 
-
-void line_following() {
+int THRESH = 309;
+void line_following(void) {
 
 // set up states
     while (1) {
         switch (dir) {
             case (stop):
-                if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center >= 1 * 309.303)) {
+                if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_center >= 1 * THRESH)) {
                 //Int, Left, Right are black, and Center is white    
                     dir = straight; // switch to drive straight
                     //code to drive_straight
@@ -98,34 +98,34 @@ void line_following() {
                 break;
             
             case (straight):
-                if ((qrd_left >= 1 * 309.303) && (qrd_intersection >= 1 * 309.303) && (qrd_right <= 1 * 309.303)) {
+                if ((qrd_left >= 1 * THRESH) && (qrd_intersection >= 1 * THRESH) && (qrd_right <= 1 * THRESH)) {
                 //Left and Int are white, and Right is black
                     dir = turn_left; //start turning left
                     //code to turn left 90 degrees
                     drive(-0.5, 0.5);
 
                 }
-                else if ((qrd_left <= 1 * 309.303) && (qrd_intersection <= 1 * 309.303) && (qrd_right >= 1 * 309.303)) {
+                else if ((qrd_left <= 1 * THRESH) && (qrd_intersection <= 1 * THRESH) && (qrd_right >= 1 * THRESH)) {
                 //Left and Int are black, and Right is white
                     dir = turn_right; //start turning right
                     //code to turn right 90 degrees
                     drive(0.5, -0.5);
                 }
-                else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left >= 1 * 309.303)) {
+                else if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left >= 1 * THRESH)) {
                     //Int and Right are black, and Left is white
                     dir = adjust_left; //start turning to the left
                     //code to adjust to the left slightly
                     drive(-0.5, 0.5);
                 }
             
-                else if ((qrd_intersection <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_right >= 1 * 309.303)) {
+                else if ((qrd_intersection <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_right >= 1 * THRESH)) {
                 //Int and Left are black, and Right is white
                     dir = adjust_right; //start turning to the right
                     //code to adjust to the right slightly
                     drive(0.5, -0.5);
                 }
 
-                else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
+                else if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_center <= 1 * THRESH)) {
                 //Int, Left, Right, and Center are black
                     dir = stop; //stop the motors
                     //code to stop motors
@@ -134,13 +134,13 @@ void line_following() {
                 break;
                 
             case (adjust_left):
-                if ((qrd_left <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_center >= 1 * 309.303)) {
+                if ((qrd_left <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_center >= 1 * THRESH)) {
                 //Left and Right are black, and Center is white   
                     dir = straight; //switch to drive straight
                     //code to drive straight
                     drive(0.5, 0.5);
                 }
-                else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
+                else if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_center <= 1 * THRESH)) {
                 //Int, Left, Right, and Center are black    
                     dir = stop; //switch to stop
                     //code to stop
@@ -149,13 +149,13 @@ void line_following() {
                 break;
                 
             case (adjust_right):
-                if ((qrd_left <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_center >= 1 * 309.303)) {
+                if ((qrd_left <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_center >= 1 * THRESH)) {
                 //Left and Right are black, and Center is white   
                     dir = straight; //switch to drive straight
                     //code to drive straight
                     drive(0.5, 0.5);
                 }
-                else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
+                else if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_center <= 1 * THRESH)) {
                 //Int, Left, Right, and Center are black    
                     dir = stop;
                     //code to stop
@@ -165,13 +165,13 @@ void line_following() {
                 
             
             case (turn_left):
-                if ((qrd_left <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_center >= 1 * 309.303)) {
+                if ((qrd_left <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_center >= 1 * THRESH)) {
                 //Left and Right are black, and Center is white    
                     dir = straight;
                     //code to drive_straight
                     drive(0.5, 0.5);
                 }
-                else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
+                else if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_center <= 1 * THRESH)) {
                 //Int, Left, Right, and Center are black   
                     dir = stop;
                     //code to stop
@@ -180,13 +180,13 @@ void line_following() {
                 break;
 
             case (turn_right):
-                if ((qrd_left <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_center >= 1 * 309.303)) {
+                if ((qrd_left <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_center >= 1 * THRESH)) {
                 //Left and Right are black, and Center is white    
                     dir = straight;
                     //code to drive_straight
                     drive(0.5, 0.5);
                 }
-                else if ((qrd_intersection <= 1 * 309.303) && (qrd_right <= 1 * 309.303) && (qrd_left <= 1 * 309.303) && (qrd_center <= 1 * 309.303)) {
+                else if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_center <= 1 * THRESH)) {
                 //Int, Left, Right, and Center are black   
                     dir = stop;
                     //code to stop

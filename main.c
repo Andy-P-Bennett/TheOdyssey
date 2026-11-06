@@ -1,6 +1,7 @@
 #include "xc.h"
 // #include "FSM.h"
 #include "motor.h"
+#include "Line_following_base.h"
 #pragma config FNOSC = FRC //8 MHz oscillator
 #pragma config FWDTEN = OFF // Disable watchdog timer while testing
 //...otherwise, the robot resets every like 3 minutes and acts possessed
@@ -36,9 +37,6 @@ int main(void) {
 
     TRISBbits.TRISB9 = 0; //pin 13 DO - Left Stepper dir pin
     TRISBbits.TRISB8 = 0; // pin 12 DO - Right Stepper dir pin
-    //TRISAbits.TRISA2 = 1; // pin 7 DI - start program
-    
-    // LATAbits.LATA1 = 0; //lo enable stepper  - we don't need enable, just set pwm
    
     //Left stepper PWM setup
     OC3CON1 = 0;
@@ -82,68 +80,7 @@ int main(void) {
 //    _T1IE = 1;
 //    _T1IF = 0;
     
-
-    enum milestoneStateEnum {IDLE, FORWARD, LEFT, FORWARD_2, TURN_180, FORWARD_3};
-    enum milestoneStateEnum mileState = IDLE;
-    // _LATB1 = 1;
-    // while(1) {}
-    // drive(-2,-2); //start with motors in reverse
-    while(0) {
-        //if pin7 high, go forward, else go reverse
-        if (PORTAbits.RA2 == 1) {
-            drive(2,2);
-        } else {
-            drive(-2,-2);
-        }
-    }
     while(1) {
-        // fsm() - this is how we'll do things in real code
-        // below is the milestone fsm for simplicity, delete after milestone.
-        
-        switch(mileState) {
-        case IDLE:
-            stepsTaken = 0;
-            //only start when pin 7 goes high
-            if (PORTAbits.RA2 == 1) {
-                mileState = FORWARD;
-                drive(1,1);
-            }
-            break;
-        case FORWARD: 
-            if (stepsTaken > 400) {
-                mileState = LEFT;
-                stepsTaken = 0;
-                drive(-0.5,0.5);
-            }
-            break;
-        case LEFT:
-            if (stepsTaken > 120) {
-                mileState = FORWARD_2;
-                stepsTaken = 0;
-                drive(1,1);
-            }
-            break;
-        case FORWARD_2:
-            if (stepsTaken > 400) {
-                mileState = TURN_180;
-                stepsTaken = 0;
-                drive(-1,1);
-            }
-            break;
-        case TURN_180:
-            if (stepsTaken > 240) {
-                mileState = FORWARD_3;
-                stepsTaken = 0;
-                drive(1,1);
-            }
-            break;
-        case FORWARD_3:
-            if (stepsTaken > 400) {
-                mileState = IDLE;
-                stepsTaken = 0;
-                drive(0,0);
-            }
-            break;
-        }
-    }
+        // fsm()
+        line_following_fsm();
 }
