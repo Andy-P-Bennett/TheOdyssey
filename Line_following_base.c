@@ -60,7 +60,7 @@ void qrd_init(void) {
 
 //-------------------------------------------------------------------------
 enum m1_states dir = stop;
-#define THRESH 309
+#define THRESH 1000
 #define BLACK(x) ((x) < THRESH)
 #define WHITE(x) ((x) > THRESH)
 void line_following_fsm(void) {
