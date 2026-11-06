@@ -83,4 +83,5 @@ int main(void) {
     while(1) {
         // fsm()
         line_following_fsm();
+    }
 }
