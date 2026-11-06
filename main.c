@@ -5,25 +5,25 @@
 #pragma config FWDTEN = OFF // Disable watchdog timer while testing
 //...otherwise, the robot resets every like 3 minutes and acts possessed
 
-volatile int stepsTaken = 0;
-volatile int steps2Taken = 0;
-volatile int timesUp = 0;
+//volatile int stepsTaken = 0;
+//volatile int steps2Taken = 0;
+//volatile int timesUp = 0;
 
-void __attribute__((interrupt, no_auto_psv)) _OC1Interrupt(void) {
-    _OC1IF = 0; // Clear the interrupt flag
-    stepsTaken++;
-}
-void __attribute__((interrupt, no_auto_psv)) _OC2Interrupt(void) {
-    _OC2IF = 0; // Clear the interrupt flag
-    steps2Taken++;
-}
+//void __attribute__((interrupt, no_auto_psv)) _OC1Interrupt(void) {
+//    _OC1IF = 0; // Clear the interrupt flag
+//    stepsTaken++;
+//}
+//void __attribute__((interrupt, no_auto_psv)) _OC2Interrupt(void) {
+//    _OC2IF = 0; // Clear the interrupt flag
+//    steps2Taken++;
+//}
 
 // This timer is not yet fully initialized. Do so before using it.
 // Note that timers 2/3 are used for the stepper PWM.
-void __attribute__((interrupt, no_auto_psv)) _T1Interrupt(void) {
-    _T1IF = 0; // Clear the interrupt flag
-    timesUp = 1;
-}
+//void __attribute__((interrupt, no_auto_psv)) _T1Interrupt(void) {
+//    _T1IF = 0; // Clear the interrupt flag
+//    timesUp = 1;
+//}
 
 int main(void) {    
     ANSA = 0;
@@ -34,30 +34,32 @@ int main(void) {
     LATB = 0;
     _RCDIV = 0;
 
-    TRISAbits.TRISA0 = 0; //pin 2 DO - Left Stepper dir pin
-    TRISBbits.TRISB1 = 0; // pin 5 DO - Right Stepper dir pin PROBLEM PIN
-    TRISAbits.TRISA2 = 1; // pin 7 DI - start program
+    TRISBbits.TRISB9 = 0; //pin 13 DO - Left Stepper dir pin
+    TRISBbits.TRISB8 = 0; // pin 12 DO - Right Stepper dir pin
+    //TRISAbits.TRISA2 = 1; // pin 7 DI - start program
     
     // LATAbits.LATA1 = 0; //lo enable stepper  - we don't need enable, just set pwm
    
-    OC1CON1 = 0;
-    OC1CON2 = 0;
+    //Left stepper PWM setup
+    OC3CON1 = 0;
+    OC3CON2 = 0;
     
-    OC1CON1bits.OCTSEL = 0b000; //select timer 2 for left stepper pwm
+    OC3CON1bits.OCTSEL = 0b000; //select timer 2 for left stepper pwm
     T2CONbits.TCKPS = 0b10; //prescaler 64:1 ~ 62.5kHz, 16 us per tick
     T2CONbits.TON = 1; //turn on timer 2
-    OC1CON2bits.SYNCSEL = 0b11111;
-    OC1CON2bits.OCTRIG = 0;
+    OC3CON2bits.SYNCSEL = 0b11111;
+    OC3CON2bits.OCTRIG = 0;
     
-    OC1RS = 19999; //set the period - 8000000/2 = 4000000, 
+    OC3RS = 19999; //set the period - 8000000/2 = 4000000, 
     // we want 200hz for full step 1 rev/s- 4000000/200 - ~19,999
-    OC1R = OC1RS/2; //default 50% DC for half DC
-    OC1CON1bits.OCM=  0b000; // Start PWM on pin 14. Set to 0 to stop PWM. 
+    OC3R = OC3RS/2; //default 50% DC for half DC
+    OC3CON1bits.OCM=  0b000; // Start PWM on pin 14. Set to 0 to stop PWM. 
     
-    _OC1IP = 4; // Select the Left Stepper interrupt priority
-    _OC1IE = 1; // Enable the OC1 interrupt
-    _OC1IF = 0; // Clear the interrupt flag
+//    _OC3IP = 4; // Select the Left Stepper interrupt priority
+//    _OC3IE = 1; // Enable the OC3 interrupt
+//    _OC3IF = 0; // Clear the interrupt flag
 
+    //Right stepper PWM setup
     OC2CON1 = 0;
     OC2CON2 = 0;
     
@@ -72,13 +74,13 @@ int main(void) {
     OC2R = OC2RS/2; //default 50% DC for half DC
     OC2CON1bits.OCM=  0b000; // Start PWM on pin 4. Set to 0 to stop PWM. 
     
-    _OC2IP = 4; // Select the Right Stepper interrupt priority
-    _OC2IE = 1; // Enable the OC2 interrupt
-    _OC2IF = 0; // Clear the interrupt flag
+//    _OC2IP = 4; // Select the Right Stepper interrupt priority
+//    _OC2IE = 1; // Enable the OC2 interrupt
+//    _OC2IF = 0; // Clear the interrupt flag
     
-    _T1IP = 4; // Timer 1 interrupt priority
-    _T1IE = 1;
-    _T1IF = 0;
+//    _T1IP = 4; // Timer 1 interrupt priority
+//    _T1IE = 1;
+//    _T1IF = 0;
     
 
     enum milestoneStateEnum {IDLE, FORWARD, LEFT, FORWARD_2, TURN_180, FORWARD_3};
