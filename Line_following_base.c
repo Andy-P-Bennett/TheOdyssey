@@ -49,6 +49,7 @@ void qrd_init(void) {
     _CSS13 = 1; // set AN13 for A/D
     _CSS14 = 1; // set AN14 for A/D
     _ADON = 1;  // enable A/D
+
     
     
     // set motor direction pins as digital outputs----------------------------------
@@ -60,7 +61,7 @@ void qrd_init(void) {
 
 //-------------------------------------------------------------------------
 enum m1_states dir = stop;
-#define THRESH 1000
+#define THRESH 300
 #define BLACK(x) ((x) > THRESH)
 #define WHITE(x) ((x) < THRESH)
 void line_following_fsm(void) {

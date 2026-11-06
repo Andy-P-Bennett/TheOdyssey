@@ -39,7 +39,7 @@ void drive(float speed_left, float speed_right) {
     OC3RS = (unsigned int) (period1);
     OC3R = OC3RS/2;
 
-    // set the direction pins and pwm period for each stepper - PROBLEM PIN
+    // set the direction pins and pwm period for each stepper
     if (speed_right < 0) {_LATB8 = 1;} else {_LATB8 = 0;};
     if (speed_right == 0) {OC2CON1bits.OCM=  0b000;} else {OC2CON1bits.OCM=  0b110;};
     period2 = TIMER_HZ / (STEPS_PER_REV * fabsf(speed_right));

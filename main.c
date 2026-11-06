@@ -5,6 +5,8 @@
 #pragma config FNOSC = FRC //8 MHz oscillator
 #pragma config FWDTEN = OFF // Disable watchdog timer while testing
 //...otherwise, the robot resets every like 3 minutes and acts possessed
+#pragma config OSCIOFNC = OFF   // OSCO pin is RA3 (I/O), not CLKO - otherwise pin 8 is possessed
+
 
 //volatile int stepsTaken = 0;
 //volatile int steps2Taken = 0;
@@ -61,7 +63,7 @@ int main(void) {
     OC2CON1 = 0;
     OC2CON2 = 0;
     
-    OC2CON1bits.OCTSEL = 0b001; //select timer 3 for right stepper pwm
+    OC2CON1bits.OCTSEL = 0b000; //select timer 3 for right stepper pwm
     T3CONbits.TCKPS = 0b10; //prescaler 64:1 
     T3CONbits.TON = 1; //turn on timer 3
     OC2CON2bits.SYNCSEL = 0b11111;
@@ -82,6 +84,7 @@ int main(void) {
     qrd_init();
     while(1) {
         // fsm()
-        line_following_fsm();
+        // line_following_fsm();
+        drive(0.5, 0.5);
     }
 }
