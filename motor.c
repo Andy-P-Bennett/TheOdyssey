@@ -41,11 +41,11 @@ void drive(float speed_left, float speed_right) {
 
     // set the direction pins and pwm period for each stepper
     if (speed_right < 0) {_LATB8 = 1;} else {_LATB8 = 0;};
-    if (speed_right == 0) {OC2CON1bits.OCM=  0b000;} else {OC2CON1bits.OCM=  0b110;};
+    if (speed_right == 0) {OC1CON1bits.OCM=  0b000;} else {OC1CON1bits.OCM=  0b110;};
     period2 = TIMER_HZ / (STEPS_PER_REV * fabsf(speed_right));
     if (period2 > 65535.0f) {period2 = 65535.0f;};
-    OC2RS = (unsigned int) (period2);
-    OC2R = OC2RS/2;
+    OC1RS = (unsigned int) (period2);
+    OC1R = OC1RS/2;
 };
 
 void drive_mps(float left_ms, float right_ms) {

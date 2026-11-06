@@ -60,19 +60,19 @@ int main(void) {
 //    _OC3IF = 0; // Clear the interrupt flag
 
     //Right stepper PWM setup
-    OC2CON1 = 0;
-    OC2CON2 = 0;
+    OC1CON1 = 0;
+    OC1CON2 = 0;
     
-    OC2CON1bits.OCTSEL = 0b000; //select timer 3 for right stepper pwm
+    OC1CON1bits.OCTSEL = 0b000; //select timer 3 for right stepper pwm
     T3CONbits.TCKPS = 0b10; //prescaler 64:1 
     T3CONbits.TON = 1; //turn on timer 3
-    OC2CON2bits.SYNCSEL = 0b11111;
-    OC2CON2bits.OCTRIG = 0;
+    OC1CON2bits.SYNCSEL = 0b11111;
+    OC1CON2bits.OCTRIG = 0;
     
-    OC2RS = 19999; //set the period - 8000000/2 = 4000000, //old math, but overwritten anyway
+    OC1RS = 19999; //set the period - 8000000/2 = 4000000, //old math, but overwritten anyway
     // we want 200hz for full step 1 rev/s- 4000000/200 - ~19,999
-    OC2R = OC2RS/2; //default 50% DC for half DC
-    OC2CON1bits.OCM=  0b000; // Start PWM on pin 4. Set to 0 to stop PWM. 
+    OC1R = OC1RS/2; //default 50% DC for half DC
+    OC1CON1bits.OCM=  0b000; // Start PWM on pin 4. Set to 0 to stop PWM. 
     
 //    _OC2IP = 4; // Select the Right Stepper interrupt priority
 //    _OC2IE = 1; // Enable the OC2 interrupt
@@ -82,9 +82,11 @@ int main(void) {
 //    _T1IE = 1;
 //    _T1IF = 0;
     qrd_init();
+    drive(0.5, 0.5);
+
     while(1) {
         // fsm()
-        // line_following_fsm();
-        drive(0.5, 0.5);
+        line_following_fsm();
+        // drive(0.5, 0.5);
     }
 }

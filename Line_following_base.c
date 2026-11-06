@@ -80,7 +80,7 @@ void line_following_fsm(void) {
 
     switch (dir) {
         case (stop):
-            if ((BLACK(qrd_int)) && (BLACK(qrd_right)) && (BLACK(qrd_left)) && (WHITE(qrd_center))) {
+            if ((WHITE(qrd_center))) {
             //Int, Left, Right are black, and Center is white    
                 dir = straight; // switch to drive straight
                 //code to drive_straight
