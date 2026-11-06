@@ -1,4 +1,6 @@
 #ifndef Line_following_base
 #define Line_following_base
-void line_following(void) {}
+enum m1_states {stop, straight, adjust_left, adjust_right, turn_left, turn_right};
+void qrd_init(void);
+void line_following_fsm(void) {}
 #endif // Line_following_base

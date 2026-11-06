@@ -1,37 +1,21 @@
 #include "xc.h"
 #include "motor.h"
-#include <stdlib.h>
-#include <math.h>
+#include "Line_following_base.h"
 
-
-//#pragma config FNOSC = FRC //8 MHz oscillator
-
-
-enum m1_states {stop, straight, adjust_left, adjust_right, turn_left, turn_right};
-enum m1_states dir = stop;
-
-
+void qrd_init(void) {
     // Right QRD set-up : set pin 6 (AN4) as analog input-----------------------------
-    _CH0SA = 0b0000; // positive input
-    _CH0NA = 0b00; // negative input
     _TRISB2 = 1; // set pin 6 to input
     _ANSB2 = 1; // set pin 6 to analog
 
     // Left QRD set-up : set pin 8 (AN14) as analog input------------------------------
-    _CH0SA = 0b0000; // positive input
-    _CH0NA = 0b00; // negative input
     _TRISA3 = 1; // set pin 8 to input
     _ANSA3 = 1; // set pin 8 to analog
     
     // Center QRD set-up : set pin 7 (AN13) as analog input----------------------------
-    _CH0SA = 0b0000; // positive input
-    _CH0NA = 0b00; // negative input
     _TRISA2 = 1; // set pin 7 to input
     _ANSA2 = 1; // set pin 7 to analog
 
     // Intersection QRD set-up : set pin 15 (AN12) as analog input----------------------
-    _CH0SA = 0b0000; // positive input
-    _CH0NA = 0b00; // negative input
     _TRISB12 = 1; // set pin 15 to input
     _ANSB12 = 1; // set pin 15 to analog
     
@@ -51,7 +35,7 @@ enum m1_states dir = stop;
     _NVCFG = 0;   // use VSS as negative reference
     _BUFREGEN = 1;// store results in buffer corresponding to channel number
     _CSCNA = 1;   // scanning mode
-    _SMPI = 1;    // begin new sampling sequence after every sample (1 pin)
+    _SMPI = 3;    // begin new sampling sequence after every sample (4 pins - 1)
     _ALTS = 0;    // sample MUXA only
 
     // AD1CON3---------------------------------------------------------------------
@@ -68,134 +52,75 @@ enum m1_states dir = stop;
     
     
     // set motor direction pins as digital outputs----------------------------------
-    _TRISB8 = 0; // set RB8 to digital output
-    _ANSB8 = 0; 
-    _TRISB9 = 0; // set RB9 to digital output
-    _ANSB9 = 0; 
-
-    qrd_left == ADC1BUF14;
-    qrd_right == ADC1BUF4;
-    qrd_center == ADC1BUF13;
-    qrd_intersection == ADC1BUF12;
-
- 
-
-//-------------------------------------------------------------------------
-
-int THRESH = 309;
-void line_following(void) {
-
-// set up states
-    while (1) {
-        switch (dir) {
-            case (stop):
-                if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_center >= 1 * THRESH)) {
-                //Int, Left, Right are black, and Center is white    
-                    dir = straight; // switch to drive straight
-                    //code to drive_straight
-                    drive(0.5, 0.5);
-                }
-                break;
-            
-            case (straight):
-                if ((qrd_left >= 1 * THRESH) && (qrd_intersection >= 1 * THRESH) && (qrd_right <= 1 * THRESH)) {
-                //Left and Int are white, and Right is black
-                    dir = turn_left; //start turning left
-                    //code to turn left 90 degrees
-                    drive(-0.5, 0.5);
-
-                }
-                else if ((qrd_left <= 1 * THRESH) && (qrd_intersection <= 1 * THRESH) && (qrd_right >= 1 * THRESH)) {
-                //Left and Int are black, and Right is white
-                    dir = turn_right; //start turning right
-                    //code to turn right 90 degrees
-                    drive(0.5, -0.5);
-                }
-                else if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left >= 1 * THRESH)) {
-                    //Int and Right are black, and Left is white
-                    dir = adjust_left; //start turning to the left
-                    //code to adjust to the left slightly
-                    drive(-0.5, 0.5);
-                }
-            
-                else if ((qrd_intersection <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_right >= 1 * THRESH)) {
-                //Int and Left are black, and Right is white
-                    dir = adjust_right; //start turning to the right
-                    //code to adjust to the right slightly
-                    drive(0.5, -0.5);
-                }
-
-                else if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_center <= 1 * THRESH)) {
-                //Int, Left, Right, and Center are black
-                    dir = stop; //stop the motors
-                    //code to stop motors
-                    drive(0, 0);
-                }
-                break;
-                
-            case (adjust_left):
-                if ((qrd_left <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_center >= 1 * THRESH)) {
-                //Left and Right are black, and Center is white   
-                    dir = straight; //switch to drive straight
-                    //code to drive straight
-                    drive(0.5, 0.5);
-                }
-                else if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_center <= 1 * THRESH)) {
-                //Int, Left, Right, and Center are black    
-                    dir = stop; //switch to stop
-                    //code to stop
-                    drive(0, 0);
-                }
-                break;
-                
-            case (adjust_right):
-                if ((qrd_left <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_center >= 1 * THRESH)) {
-                //Left and Right are black, and Center is white   
-                    dir = straight; //switch to drive straight
-                    //code to drive straight
-                    drive(0.5, 0.5);
-                }
-                else if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_center <= 1 * THRESH)) {
-                //Int, Left, Right, and Center are black    
-                    dir = stop;
-                    //code to stop
-                    drive(0, 0);
-                }
-                break;
-                
-            
-            case (turn_left):
-                if ((qrd_left <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_center >= 1 * THRESH)) {
-                //Left and Right are black, and Center is white    
-                    dir = straight;
-                    //code to drive_straight
-                    drive(0.5, 0.5);
-                }
-                else if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_center <= 1 * THRESH)) {
-                //Int, Left, Right, and Center are black   
-                    dir = stop;
-                    //code to stop
-                    drive(0, 0);
-                }
-                break;
-
-            case (turn_right):
-                if ((qrd_left <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_center >= 1 * THRESH)) {
-                //Left and Right are black, and Center is white    
-                    dir = straight;
-                    //code to drive_straight
-                    drive(0.5, 0.5);
-                }
-                else if ((qrd_intersection <= 1 * THRESH) && (qrd_right <= 1 * THRESH) && (qrd_left <= 1 * THRESH) && (qrd_center <= 1 * THRESH)) {
-                //Int, Left, Right, and Center are black   
-                    dir = stop;
-                    //code to stop
-                    drive(0, 0);
-                }
-                break;
-        }
-    }
-    
-    return 0;
+    // _TRISB8 = 0; // set RB8 to digital output
+    // _ANSB8 = 0; 
+    // _TRISB9 = 0; // set RB9 to digital output
+    // _ANSB9 = 0; 
 }
+
 //-------------------------------------------------------------------------
+enum m1_states dir = stop;
+#define THRESH 309
+#define BLACK(x) ((x) < THRESH)
+#define WHITE(x) ((x) > THRESH)
+void line_following_fsm(void) {
+
+    int qrd_left = ADC1BUF14;
+    int qrd_right = ADC1BUF4;
+    int qrd_center = ADC1BUF13;
+    int qrd_int = ADC1BUF12;
+
+    // Failsafe stop if all sensors are black
+    if (BLACK(qrd_left) && BLACK(qrd_right) && BLACK(qrd_center) && BLACK(qrd_int)) {
+        dir = stop;
+        drive(0, 0);
+        return;
+    }
+
+    switch (dir) {
+        case (stop):
+            if ((BLACK(qrd_int)) && (BLACK(qrd_right)) && (BLACK(qrd_left)) && (WHITE(qrd_center))) {
+            //Int, Left, Right are black, and Center is white    
+                dir = straight; // switch to drive straight
+                //code to drive_straight
+                drive(0.5, 0.5);
+            }
+            break;
+        
+        case (straight):
+            if ((WHITE(qrd_left)) && (WHITE(qrd_int)) && (BLACK(qrd_right))) {
+            //Left and Int are white, and Right is black
+                dir = turn_left; //start turning left
+                drive(0.3, 0.5);
+
+            }
+            else if ((BLACK(qrd_left)) && (BLACK(qrd_int)) && (WHITE(qrd_right))) {
+            //Left and Int are black, and Right is white
+                dir = turn_right; //start turning right
+                drive(0.5, 0.3);
+            }
+            else if ((BLACK(qrd_int)) && (BLACK(qrd_right)) && (WHITE(qrd_left))) {
+                //Int and Right are black, and Left is white
+                dir = adjust_left; //start turning to the left
+                drive(0.3, 0.5);
+            }
+        
+            else if ((BLACK(qrd_int)) && (BLACK(qrd_left)) && (WHITE(qrd_right))) {
+            //Int and Left are black, and Right is white
+                dir = adjust_right; //start turning to the right
+                drive(0.5, 0.3);
+            }
+            break;
+            
+        case (adjust_left):
+        case (adjust_right):
+        case (turn_left):
+        case (turn_right):
+            if ((BLACK(qrd_left)) && (BLACK(qrd_right)) && (WHITE(qrd_center))) {
+            //Left and Right are black, and Center is white   
+                dir = straight; //switch to drive straight
+                drive(0.5, 0.5);
+            }
+            break;
+    }
+}

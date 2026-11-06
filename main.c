@@ -79,7 +79,7 @@ int main(void) {
 //    _T1IP = 4; // Timer 1 interrupt priority
 //    _T1IE = 1;
 //    _T1IF = 0;
-    
+    qrd_init();
     while(1) {
         // fsm()
         line_following_fsm();
