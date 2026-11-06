@@ -49,7 +49,6 @@ void qrd_init(void) {
     _CSS13 = 1; // set AN13 for A/D
     _CSS14 = 1; // set AN14 for A/D
     _ADON = 1;  // enable A/D
-
     
     
     // set motor direction pins as digital outputs----------------------------------
@@ -61,9 +60,13 @@ void qrd_init(void) {
 
 //-------------------------------------------------------------------------
 enum m1_states dir = stop;
-#define THRESH 300
+enum m1_states prev_state = stop;
+#define THRESH 1000
 #define BLACK(x) ((x) > THRESH)
 #define WHITE(x) ((x) < THRESH)
+#define full_speed 0.5
+#define adjust_speed 0.3
+#define turn_speed 0
 void line_following_fsm(void) {
 
     int qrd_left = ADC1BUF14;
@@ -80,48 +83,180 @@ void line_following_fsm(void) {
 
     switch (dir) {
         case (stop):
-            if ((WHITE(qrd_center))) {
+            prev_state = stop;
+            if ((BLACK(qrd_int)) && (BLACK(qrd_left)) && (WHITE(qrd_center)) &&  (BLACK(qrd_right))) {
             //Int, Left, Right are black, and Center is white    
                 dir = straight; // switch to drive straight
                 //code to drive_straight
-                drive(0.5, 0.5);
+                drive(full_speed, full_speed);
+            }
+            else if ((WHITE(qrd_left)) && (WHITE(qrd_center)) && (BLACK(qrd_right))) {
+            //Left and Int are white, and Right is black
+                dir = adjust_left; //small adjustment left
+                drive(adjust_speed, full_speed); // slow left wheel to slight turn left
+
+            }
+            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (WHITE(qrd_right))) {
+            //Left and Int are black, and Right is white
+                dir = turn_right; //large adjustment right
+                drive(full_speed, turn_speed); // stop right wheel to hard turn right
+            }
+            else if ((WHITE(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+                //Int and Right are black, and Left is white
+                dir = turn_left; //large adjustment left
+                drive(turn_speed, full_speed); // stop left wheel to hard turn left
+            }
+        
+            else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) && (WHITE(qrd_right))) {
+            //Int and Left are black, and Right is white
+                dir = adjust_right; //small adjustment right
+                drive(full_speed, adjust_speed); // slow right wheel to slight turn right
             }
             break;
         
         case (straight):
-            if ((WHITE(qrd_left)) && (WHITE(qrd_int)) && (BLACK(qrd_right))) {
+            prev_state = straight;
+            if ((WHITE(qrd_left)) && (WHITE(qrd_center)) && (BLACK(qrd_right))) {
             //Left and Int are white, and Right is black
-                dir = turn_left; //start turning left
-                drive(0.3, 0.5);
+                dir = adjust_left; //small adjustment left
+                drive(adjust_speed, full_speed); // slow left wheel to slight turn left
 
             }
-            else if ((BLACK(qrd_left)) && (BLACK(qrd_int)) && (WHITE(qrd_right))) {
+            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (WHITE(qrd_right))) {
             //Left and Int are black, and Right is white
-                dir = turn_right; //start turning right
-                drive(0.5, 0.3);
+                dir = turn_right; //large adjustment right
+                drive(full_speed, turn_speed); // stop right wheel to hard turn right
             }
-            else if ((BLACK(qrd_int)) && (BLACK(qrd_right)) && (WHITE(qrd_left))) {
+            else if ((WHITE(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
                 //Int and Right are black, and Left is white
-                dir = adjust_left; //start turning to the left
-                drive(0.3, 0.5);
+                dir = turn_left; //large adjustment left
+                drive(turn_speed, full_speed); // stop left wheel to hard turn left
             }
         
-            else if ((BLACK(qrd_int)) && (BLACK(qrd_left)) && (WHITE(qrd_right))) {
+            else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) && (WHITE(qrd_right))) {
             //Int and Left are black, and Right is white
-                dir = adjust_right; //start turning to the right
-                drive(0.5, 0.3);
+                dir = adjust_right; //small adjustment right
+                drive(full_speed, adjust_speed); // slow right wheel to slight turn right
+            }
+            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+                dir = stop; // stop when completely missing the line
+                drive(0, 0);
             }
             break;
             
         case (adjust_left):
-        case (adjust_right):
-        case (turn_left):
-        case (turn_right):
-            if ((BLACK(qrd_left)) && (BLACK(qrd_right)) && (WHITE(qrd_center))) {
-            //Left and Right are black, and Center is white   
-                dir = straight; //switch to drive straight
-                drive(0.5, 0.5);
+            prev_state = adjust_left;
+            if ((BLACK(qrd_left)) && (WHITE(qrd_center)) &&  (BLACK(qrd_right))) {
+                //Left and Int are white, and Right is black
+                dir = straight; //small adjustment left
+                drive(full_speed, full_speed); // slow left wheel to slight turn left
+
+            }
+            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (WHITE(qrd_right))) {
+            //Left and Int are black, and Right is white
+                dir = turn_right; //large adjustment right
+                drive(full_speed, turn_speed); // stop right wheel to hard turn right
+            }
+            else if ((WHITE(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+                //Int and Right are black, and Left is white
+                dir = turn_left; //large adjustment left
+                drive(turn_speed, full_speed); // stop left wheel to hard turn left
+            }
+        
+            else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) && (WHITE(qrd_right))) {
+            //Int and Left are black, and Right is white
+                dir = adjust_right; //small adjustment right
+                drive(full_speed, adjust_speed); // slow right wheel to slight turn right
+            }
+            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+                dir = stop; // stop when completely missing the line
+                drive(0, 0);
             }
             break;
+
+        case (adjust_right):
+            prev_state = adjust_right;
+            if ((WHITE(qrd_left)) && (WHITE(qrd_center)) && (BLACK(qrd_right))) {
+            //Left and Int are white, and Right is black
+                dir = adjust_left; //small adjustment left
+                drive(adjust_speed, full_speed); // slow left wheel to slight turn left
+
+            }
+            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (WHITE(qrd_right))) {
+            //Left and Int are black, and Right is white
+                dir = turn_right; //large adjustment right
+                drive(full_speed, turn_speed); // stop right wheel to hard turn right
+            }
+            else if ((WHITE(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+                //Int and Right are black, and Left is white
+                dir = turn_left; //large adjustment left
+                drive(turn_speed, full_speed); // stop left wheel to hard turn left
+            }
+        
+            else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) &&  (BLACK(qrd_right))) {
+            //Int and Left are black, and Right is white
+                dir = straight; //small adjustment right
+                drive(full_speed, full_speed); // slow right wheel to slight turn right
+            }
+            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+                dir = stop; // stop when completely missing the line
+                drive(0, 0);
+            }
+            break;
+
+        case (turn_left):
+            prev_state = turn_left;
+            if ((WHITE(qrd_left)) && (WHITE(qrd_center)) && (BLACK(qrd_right))) {
+            //Left and Int are white, and Right is black
+                dir = adjust_left; //small adjustment left
+                drive(adjust_speed, full_speed); // slow left wheel to slight turn left
+
+            }
+            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (WHITE(qrd_right))) {
+            //Left and Int are black, and Right is white
+                dir = turn_right; //large adjustment right
+                drive(full_speed, turn_speed); // stop right wheel to hard turn right
+            }
+            else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) &&  (BLACK(qrd_right))) {
+                dir = straight; // return to straight
+                drive(full_speed, full_speed); // stop left wheel to hard turn left
+            }
+        
+            else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) && (WHITE(qrd_right))) {
+            //Int and Left are black, and Right is white
+                dir = adjust_right; //small adjustment right
+                drive(full_speed, adjust_speed); // slow right wheel to slight turn right
+            }
+            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+                dir = stop; // stop when completely missing the line
+                drive(0, 0);
+            }
+        case (turn_right):
+            prev_state = turn_right;
+            if ((WHITE(qrd_left)) && (WHITE(qrd_center)) && (BLACK(qrd_right))) {
+            //Left and Int are white, and Right is black
+                dir = adjust_left; //small adjustment left
+                drive(adjust_speed, full_speed); // slow left wheel to slight turn left
+
+            }
+            else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) &&  (BLACK(qrd_right))) {
+                dir = straight; // return to stright
+                drive(full_speed, full_speed); // stop right wheel to hard turn right
+            }
+            else if ((WHITE(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+                //Int and Right are black, and Left is white
+                dir = turn_left; //large adjustment left
+                drive(turn_speed, full_speed); // stop left wheel to hard turn left
+            }
+        
+            else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) && (WHITE(qrd_right))) {
+            //Int and Left are black, and Right is white
+                dir = adjust_right; //small adjustment right
+                drive(full_speed, adjust_speed); // slow right wheel to slight turn right
+            }
+            else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
+                dir = stop; // stop when completely missing the line
+                drive(0, 0);
+            };
     }
 }
