@@ -32,15 +32,15 @@ void drive(float speed_left, float speed_right) {
     else if (speed_right < -MAX_SPEED) {speed_right = -MAX_SPEED;}
 
     // set the direction pins and pwm period for each stepper
-    if (speed_left < 0) {_LATA0 = 0;} else {_LATA0 = 1;};
-    if (speed_left == 0) {OC1CON1bits.OCM=  0b000;} else {OC1CON1bits.OCM=  0b110;};
+    if (speed_left < 0) {_LATB1 = 0;} else {_LATB1 = 1;};
+    if (speed_left == 0) {OC3CON1bits.OCM=  0b000;} else {OC3CON1bits.OCM=  0b110;};
     period1 = TIMER_HZ / (STEPS_PER_REV * fabsf(speed_left));
     if (period1 > 65535.0f) {period1 = 65535.0f;};
-    OC1RS = (unsigned int) (period1);
-    OC1R = OC1RS/2;
+    OC3RS = (unsigned int) (period1);
+    OC3R = OC3RS/2;
 
     // set the direction pins and pwm period for each stepper - PROBLEM PIN
-    if (speed_right < 0) {_LATB1 = 1;} else {_LATB1 = 0;};
+    if (speed_right < 0) {_LATB0 = 1;} else {_LATB0 = 0;};
     if (speed_right == 0) {OC2CON1bits.OCM=  0b000;} else {OC2CON1bits.OCM=  0b110;};
     period2 = TIMER_HZ / (STEPS_PER_REV * fabsf(speed_right));
     if (period2 > 65535.0f) {period2 = 65535.0f;};
