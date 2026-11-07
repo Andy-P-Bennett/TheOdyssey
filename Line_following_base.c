@@ -59,7 +59,7 @@ void qrd_init(void) {
 }
 
 //-------------------------------------------------------------------------
-enum m1_states dir = stop;
+enum m1_states dir = straight;
 enum m1_states prev_state = stop;
 #define THRESH 500
 #define BLACK(x) ((x) > THRESH)
