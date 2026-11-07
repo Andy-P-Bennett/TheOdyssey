@@ -67,19 +67,12 @@ enum m1_states prev_state = stop;
 #define full_speed 0.8
 #define adjust_speed 0.4
 #define turn_speed 0.2
-void line_following_fsm(void) {
 
+void line_following_fsm(void) {
     int qrd_left = ADC1BUF14;
     int qrd_right = ADC1BUF4;
     int qrd_center = ADC1BUF13;
     int qrd_int = ADC1BUF12;
-
-    // Failsafe stop if all sensors are black
-    if (BLACK(qrd_left) && BLACK(qrd_right) && BLACK(qrd_center) && BLACK(qrd_int)) {
-        dir = stop;
-        drive(0, 0);
-        return;
-    }
 
     switch (dir) {
         case (stop):
