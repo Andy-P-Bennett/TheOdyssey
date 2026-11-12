@@ -56,8 +56,7 @@ enum m1_states prev_state = idle;
 #define SIDE_WALL(x) ((x) > SIDE_THRESH)
 #define FRONT_WALL(x) ((x) > FRONT_THRESH)
 #define full_speed 0.8
-#define adjust_speed 0.4
-#define turn_speed 0.2
+#define turn_speed 0.5
 
 void canyon_navigation_fsm(void) {
     int sharp_left = ADC1BUF0;
@@ -70,19 +69,19 @@ void canyon_navigation_fsm(void) {
             if ((FRONT_WALL(ir_front)) && (SIDE_WALL(sharp_right))) {
             //runs into a wall and has a wall on the right
                 dir = left; //turn 90 degrees left
-                drive(turn_speed, full_speed); // stop left wheel to hard turn left
+                drive(-turn_speed, turn_speed); //turn left
             }
             else if ((FRONT_WALL(ir_front)) && (SIDE_WALL(sharp_left))) {
                 //runs into a wall and has a wall on the left
                 dir = right; //turn 90 degrees right
-                drive(full_speed, turn_speed); // stop right wheel to hard turn right
+                drive(turn_speed, -turn_speed); //turn right
             }
             break;
         
 
         case (left):
             prev_state = left;
-            if (stepsTaken > 500) {
+            if (stepsTaken > 400) {
             //90 degree left turn
                 dir = straight; //complete turn and continue straight
                 drive(full_speed, full_speed);
@@ -91,7 +90,7 @@ void canyon_navigation_fsm(void) {
 
         case (right):
             prev_state = right;
-            if (steps2Taken > 500) {
+            if (stepsTaken > 400) {
             //90 degree right turn
                 dir = straight; //complete turn and continue straight
                 drive(full_speed, full_speed);
