@@ -4,8 +4,8 @@
 #include "Canyon_navigation_base.h"
 
 
-enum can_states can = forward;
-enum can_states prev_state = idle;
+static enum can_states can = forward;
+static enum can_states prev_state = idle;
 #define SIDE_THRESH 500 // 3.3*(500/1024) = 1.61V, which is about 8cm away from the wall, per psc spec sheet
 #define FRONT_THRESH 500
 #define SIDE_WALL(x) ((x) > SIDE_THRESH)

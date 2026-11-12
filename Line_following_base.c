@@ -4,8 +4,8 @@
 
 
 //-------------------------------------------------------------------------
-enum m1_states dir = straight;
-enum m1_states prev_state = stop;
+static enum m1_states dir = straight;
+static enum m1_states prev_state = stop;
 #define THRESH 500
 #define BLACK(x) ((x) > THRESH)
 #define WHITE(x) ((x) < THRESH)

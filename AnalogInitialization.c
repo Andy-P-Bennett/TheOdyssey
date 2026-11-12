@@ -27,7 +27,7 @@ void init_an(void) {
     _ADON = 0; // disable analog during set-up
     
     // AD1CON1----------------------------------------------------------------------
-    _MODE12 = 1;  // 10-bit resolution
+    _MODE12 = 0;  // 10-bit resolution
     _FORM = 0;    // unsigned integer output
     _SSRC = 7;    // auto convert
     _ASAM = 1;    // auto sample on
