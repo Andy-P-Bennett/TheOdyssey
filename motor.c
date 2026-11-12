@@ -5,7 +5,7 @@
 
 #define FCY_HZ 4000000.0f
 #define TIMER_HZ (FCY_HZ/64.0f) // 62.5 kHz with 1:64 prescaler
-#define STEPS_PER_REV 200.0f
+#define STEPS_PER_REV 400.0f
 #define MAX_SPEED 3.0f
 #define MIN_SPEED 0.005f // rev/sec, slowest speed we can do with 16 bit timer
 #define MAX_TICKS_PER_SEC (STEPS_PER_REV * MAX_SPEED) // 600 ticks/sec
