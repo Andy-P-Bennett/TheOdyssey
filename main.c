@@ -87,7 +87,8 @@ int main(void) {
 
     while(1) {
         // fsm()
-        line_following_fsm();
+        // line_following_fsm();
+        canyon_navigation_fsm();
         // drive(0.5, 0.5);
     }
 }
