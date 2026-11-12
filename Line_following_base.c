@@ -2,61 +2,6 @@
 #include "motor.h"
 #include "Line_following_base.h"
 
-void qrd_init(void) {
-    // Right QRD set-up : set pin 6 (AN4) as analog input-----------------------------
-    _TRISB2 = 1; // set pin 6 to input
-    _ANSB2 = 1; // set pin 6 to analog
-
-    // Left QRD set-up : set pin 8 (AN14) as analog input------------------------------
-    _TRISA3 = 1; // set pin 8 to input
-    _ANSA3 = 1; // set pin 8 to analog
-    
-    // Center QRD set-up : set pin 7 (AN13) as analog input----------------------------
-    _TRISA2 = 1; // set pin 7 to input
-    _ANSA2 = 1; // set pin 7 to analog
-
-    // Intersection QRD set-up : set pin 15 (AN12) as analog input----------------------
-    _TRISB12 = 1; // set pin 15 to input
-    _ANSB12 = 1; // set pin 15 to analog
-    
-     // disable A/D module during configuration------------------------------------
-    _ADON = 0;    
-
-
-
-    // AD1CON1----------------------------------------------------------------------
-    _MODE12 = 0;  // 10-bit resolution
-    _FORM = 0;    // unsigned integer output
-    _SSRC = 7;    // auto convert
-    _ASAM = 1;    // auto sample on
-    
-    // AD1CON2----------------------------------------------------------------------
-    _PVCFG = 0;   // use VDD as positive reference
-    _NVCFG = 0;   // use VSS as negative reference
-    _BUFREGEN = 1;// store results in buffer corresponding to channel number
-    _CSCNA = 1;   // scanning mode
-    _SMPI = 3;    // begin new sampling sequence after every sample (4 pins - 1)
-    _ALTS = 0;    // sample MUXA only
-
-    // AD1CON3---------------------------------------------------------------------
-    _ADRC = 0;    // use system clock
-    _SAMC = 1;    // sample every A/D period
-    _ADCS = 0x3F; // TAD = 64*TCY
-
-    //set up QRD pins as analog inputs---------------------------------------------
-    _CSS4 = 1;  // set AN4 for A/D
-    _CSS12 = 1; // set AN12 for A/D
-    _CSS13 = 1; // set AN13 for A/D
-    _CSS14 = 1; // set AN14 for A/D
-    _ADON = 1;  // enable A/D
-    
-    
-    // set motor direction pins as digital outputs----------------------------------
-    // _TRISB8 = 0; // set RB8 to digital output
-    // _ANSB8 = 0; 
-    // _TRISB9 = 0; // set RB9 to digital output
-    // _ANSB9 = 0; 
-}
 
 //-------------------------------------------------------------------------
 enum m1_states dir = straight;

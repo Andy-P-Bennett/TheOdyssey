@@ -2,54 +2,10 @@
 #include "motor.h"
 #include "Canyon_navigation_base.h"
 
-void sharp_init(void) {
-    // right sharp set-up (pin3, AN1, RA1)
-    _TRISA1 = 1; // set pin 3 to input
-    _ANSA1 = 1; // set pin 3 to analog
-    
-    // left sharp set-up (pin2, AN0, RA0)
-    _TRISA0 = 1; // set pin 2 to input
-    _ANSA0 = 1; // set pin 2 to analog
-
-
-    // analog configuration
-    _ADON = 0; // disable analog during set-up
-    
-    // AD1CON1----------------------------------------------------------------------
-    _MODE12 = 0;  // 10-bit resolution
-    _FORM = 0;    // unsigned integer output
-    _SSRC = 7;    // auto convert
-    _ASAM = 1;    // auto sample on
-    
-    // AD1CON2----------------------------------------------------------------------
-    _PVCFG = 0;   // use VDD as positive reference
-    _NVCFG = 0;   // use VSS as negative reference
-    _BUFREGEN = 1;// store results in buffer corresponding to channel number
-    _CSCNA = 1;   // scanning mode
-    _SMPI = 1;    // begin new sampling sequence after every sample (2 pins - 1)
-    _ALTS = 0;    // sample MUXA only
-
-    // AD1CON3---------------------------------------------------------------------
-    _ADRC = 0;    // use system clock
-    _SAMC = 1;    // sample every A/D period
-    _ADCS = 0x3F; // TAD = 64*TCY
-
-    //set up sharp pins as analog inputs---------------------------------------------
-    _CSS4 = 0;  // remove AN4 for A/D
-    _CSS12 = 1; // remove AN12 for A/D
-    _CSS13 = 1; // remove AN13 for A/D
-    _CSS14 = 1; // remove AN14 for A/D
-    _CSS0 = 1;  // set AN4 for A/D
-    _CSS1 = 1; // set AN12 for A/D
-
-//This should only work if the the bits for the qrd and any other analog is turned off. Should they all be powered at once?
-
-    _ADON = 1;  // enable A/D
-}
 
 enum can_States dir = straight;
 
 
  canyon_navigation_fsm(void) {
-    
+
  }
