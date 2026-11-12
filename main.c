@@ -3,6 +3,7 @@
 #include "motor.h"
 #include "Line_following_base.h"
 #include "AnalogInitialization.h"
+#include "Canyon_navigation_base.h"
 #pragma config FNOSC = FRC //8 MHz oscillator
 #pragma config FWDTEN = OFF // Disable watchdog timer while testing
 //...otherwise, the robot resets every like 3 minutes and acts possessed
@@ -18,8 +19,8 @@ volatile int stepsTaken = 0;
 //    stepsTaken++;
 //}
 
-void __attribute__((interrupt, no_auto_psv)) _OC2Interrupt(void) {
-    _OC2IF = 0; // Clear the interrupt flag
+void __attribute__((interrupt, no_auto_psv)) _OC3Interrupt(void) {
+    _OC3IF = 0; // Clear the interrupt flag
     stepsTaken++;
 }
 
@@ -76,9 +77,9 @@ int main(void) {
     OC1R = OC1RS/2; //default 50% DC for half DC
     OC1CON1bits.OCM=  0b000; // Start PWM on pin 4. Set to 0 to stop PWM. 
     
-    _OC2IP = 4; // Select the Right Stepper interrupt priority
-    _OC2IE = 1; // Enable the OC2 interrupt
-    _OC2IF = 0; // Clear the interrupt flag
+    _OC3IP = 4; // Select the Right Stepper interrupt priority
+    _OC3IE = 1; // Enable the OC2 interrupt
+    _OC3IF = 0; // Clear the interrupt flag
     
 //    _T1IP = 4; // Timer 1 interrupt priority
 //    _T1IE = 1;
@@ -89,7 +90,7 @@ int main(void) {
     while(1) {
         // fsm()
         // line_following_fsm();
-        canyon_navigation_fsm();
+        canyon_navigation_fsm(stepsTaken);
         // drive(0.5, 0.5);
     }
 }
