@@ -41,7 +41,6 @@ void sharp_init(void) {
     _CSS14 = 0; // remove AN14 for A/D
      _CSS0 = 1;  // set AN0 for A/D
     _CSS1 = 1; // set AN1 for A/D
-    _CSS9 = 1; // set AN9 for A/D
 
 
 //This should only work if the the bits for the qrd and any other analog is turned off. Should they all be powered at once?
@@ -59,19 +58,18 @@ enum m1_states prev_state = idle;
 #define turn_speed 0.5
 
 void canyon_navigation_fsm(void) {
-    int sharp_left = ADC1BUF0;
+    int sharp_front = ADC1BUF0;
     int sharp_right = ADC1BUF1;
-    int ir_front = ADC1BUF9;
 
     switch (dir) {
         case (straight):
             prev_state = straight;
-            if ((FRONT_WALL(ir_front)) && (SIDE_WALL(sharp_right))) {
+            if ((FRONT_WALL(sharp_front)) && (SIDE_WALL(sharp_right))) {
             //runs into a wall and has a wall on the right
                 dir = left; //turn 90 degrees left
                 drive(-turn_speed, turn_speed); //turn left
             }
-            else if ((FRONT_WALL(ir_front)) && (SIDE_WALL(sharp_left))) {
+            else if ((FRONT_WALL(sharp_front)) && (!SIDE_WALL(sharp_right))) {
                 //runs into a wall and has a wall on the left
                 dir = right; //turn 90 degrees right
                 drive(turn_speed, -turn_speed); //turn right
