@@ -16,10 +16,11 @@
 //    _OC1IF = 0; // Clear the interrupt flag
 //    stepsTaken++;
 //}
-//void __attribute__((interrupt, no_auto_psv)) _OC2Interrupt(void) {
-//    _OC2IF = 0; // Clear the interrupt flag
-//    steps2Taken++;
-//}
+
+void __attribute__((interrupt, no_auto_psv)) _OC2Interrupt(void) {
+    _OC2IF = 0; // Clear the interrupt flag
+    stepsTaken++;
+}
 
 // This timer is not yet fully initialized. Do so before using it.
 // Note that timers 2/3 are used for the stepper PWM.
@@ -74,9 +75,9 @@ int main(void) {
     OC1R = OC1RS/2; //default 50% DC for half DC
     OC1CON1bits.OCM=  0b000; // Start PWM on pin 4. Set to 0 to stop PWM. 
     
-//    _OC2IP = 4; // Select the Right Stepper interrupt priority
-//    _OC2IE = 1; // Enable the OC2 interrupt
-//    _OC2IF = 0; // Clear the interrupt flag
+    _OC2IP = 4; // Select the Right Stepper interrupt priority
+    _OC2IE = 1; // Enable the OC2 interrupt
+    _OC2IF = 0; // Clear the interrupt flag
     
 //    _T1IP = 4; // Timer 1 interrupt priority
 //    _T1IE = 1;
