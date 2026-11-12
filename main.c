@@ -8,7 +8,7 @@
 #pragma config OSCIOFNC = OFF   // OSCO pin is RA3 (I/O), not CLKO - otherwise pin 8 is possessed
 
 
-//volatile int stepsTaken = 0;
+volatile int stepsTaken = 0;
 //volatile int steps2Taken = 0;
 //volatile int timesUp = 0;
 

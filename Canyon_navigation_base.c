@@ -51,7 +51,7 @@ void sharp_init(void) {
 
 enum m1_states dir = straight;
 enum m1_states prev_state = idle;
-#define SIDE_THRESH 500
+#define SIDE_THRESH 500 // 3.3*(500/1024) = 1.61V, which is about 8cm away from the wall, per psc spec sheet
 #define FRONT_THRESH 500
 #define SIDE_WALL(x) ((x) > SIDE_THRESH)
 #define FRONT_WALL(x) ((x) > FRONT_THRESH)
