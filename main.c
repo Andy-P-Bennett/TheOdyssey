@@ -2,6 +2,7 @@
 // #include "FSM.h"
 #include "motor.h"
 #include "Line_following_base.h"
+#include "AnalogInitialization.h"
 #pragma config FNOSC = FRC //8 MHz oscillator
 #pragma config FWDTEN = OFF // Disable watchdog timer while testing
 //...otherwise, the robot resets every like 3 minutes and acts possessed
@@ -82,7 +83,7 @@ int main(void) {
 //    _T1IP = 4; // Timer 1 interrupt priority
 //    _T1IE = 1;
 //    _T1IF = 0;
-    qrd_init();
+    init_an();
     drive(0.5, 0.5);
 
     while(1) {
