@@ -1,4 +1,5 @@
 #include <xc.h>
+#include "main.c"
 #include "motor.h"
 #include "Canyon_navigation_base.h"
 
@@ -48,8 +49,8 @@ void sharp_init(void) {
     _ADON = 1;  // enable A/D
 }
 
-enum m1_states dir = straight;
-enum m1_states prev_state = idle;
+enum can_states dir = straight;
+enum can_states prev_state = idle;
 #define SIDE_THRESH 500 // 3.3*(500/1024) = 1.61V, which is about 8cm away from the wall, per psc spec sheet
 #define FRONT_THRESH 500
 #define SIDE_WALL(x) ((x) > SIDE_THRESH)
