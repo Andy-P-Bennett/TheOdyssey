@@ -36,11 +36,13 @@ void sharp_init(void) {
 
     //set up sharp pins as analog inputs---------------------------------------------
     _CSS4 = 0;  // remove AN4 for A/D
-    _CSS12 = 1; // remove AN12 for A/D
-    _CSS13 = 1; // remove AN13 for A/D
-    _CSS14 = 1; // remove AN14 for A/D
-    _CSS0 = 1;  // set AN4 for A/D
-    _CSS1 = 1; // set AN12 for A/D
+    _CSS12 = 0; // remove AN12 for A/D
+    _CSS13 = 0; // remove AN13 for A/D
+    _CSS14 = 0; // remove AN14 for A/D
+     _CSS0 = 1;  // set AN0 for A/D
+    _CSS1 = 1; // set AN1 for A/D
+    _CSS9 = 1; // set AN9 for A/D
+
 
 //This should only work if the the bits for the qrd and any other analog is turned off. Should they all be powered at once?
 
