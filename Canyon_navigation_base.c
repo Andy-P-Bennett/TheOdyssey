@@ -4,7 +4,7 @@
 #include "Canyon_navigation_base.h"
 
 
-static enum can_states can = forward;
+static enum can_states can = idle;
 static enum can_states prev_state = idle;
 #define SIDE_THRESH 500 // 3.3*(500/1024) = 1.61V, which is about 8cm away from the wall, per psc spec sheet
 #define FRONT_THRESH 500
@@ -32,6 +32,8 @@ int canyon_navigation_fsm(int steps) {
                 drive(turn_speed, -turn_speed); //turn right
                 return 1; //reset steps to 0;
             }
+        return 0; //keep counting steps until 90 degree turn is complete
+
         case (left):
             prev_state = left;
             if (steps > 400) {
@@ -40,6 +42,8 @@ int canyon_navigation_fsm(int steps) {
                 drive(full_speed, full_speed);
                 return 1; //reset steps to 0
             }
+        return 0; //keep counting steps until 90 degree turn is complete
+
         case (right):
             prev_state = right;
             if (steps > 400) {
@@ -48,6 +52,8 @@ int canyon_navigation_fsm(int steps) {
                 drive(full_speed, full_speed);
                 return 1; //reset steps to 0
             }
+        return 0; //keep counting steps until 90 degree turn is complete
+
         case (idle):
             prev_state = idle;
             can = forward; //complete turn and continue forward
