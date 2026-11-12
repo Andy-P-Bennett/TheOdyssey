@@ -58,9 +58,9 @@ int main(void) {
     OC3R = OC3RS/2; //default 50% DC for half DC
     OC3CON1bits.OCM=  0b000; // Start PWM on pin 14. Set to 0 to stop PWM. 
     
-//    _OC3IP = 4; // Select the Left Stepper interrupt priority
-//    _OC3IE = 1; // Enable the OC3 interrupt
-//    _OC3IF = 0; // Clear the interrupt flag
+   _OC3IP = 4; // Select the Left Stepper interrupt priority
+   _OC3IE = 1; // Enable the OC3 interrupt
+   _OC3IF = 0; // Clear the interrupt flag
 
     //Right stepper PWM setup
     OC1CON1 = 0;
@@ -77,9 +77,9 @@ int main(void) {
     OC1R = OC1RS/2; //default 50% DC for half DC
     OC1CON1bits.OCM=  0b000; // Start PWM on pin 4. Set to 0 to stop PWM. 
     
-    _OC3IP = 4; // Select the Right Stepper interrupt priority
-    _OC3IE = 1; // Enable the OC2 interrupt
-    _OC3IF = 0; // Clear the interrupt flag
+    // _OC1IP = 4; // Select the Right Stepper interrupt priority
+    // _OC1IE = 1; // Enable the OC1 interrupt
+    // _OC1IF = 0; // Clear the interrupt flag
     
 //    _T1IP = 4; // Timer 1 interrupt priority
 //    _T1IE = 1;
@@ -90,7 +90,9 @@ int main(void) {
     while(1) {
         // fsm()
         // line_following_fsm();
-        canyon_navigation_fsm(stepsTaken);
+        if (canyon_navigation_fsm(stepsTaken) == 1) {
+            stepsTaken = 0;
+        }
         // drive(0.5, 0.5);
     }
 }
