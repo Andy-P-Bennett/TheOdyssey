@@ -4,13 +4,13 @@
 #include "Canyon_navigation_base.h"
 
 
-enum can_states dir = straight;
+enum can_states dir = forward;
 enum can_states prev_state = idle;
 #define SIDE_THRESH 500 // 3.3*(500/1024) = 1.61V, which is about 8cm away from the wall, per psc spec sheet
 #define FRONT_THRESH 500
 #define SIDE_WALL(x) ((x) > SIDE_THRESH)
 #define FRONT_WALL(x) ((x) > FRONT_THRESH)
-#define full_speed 0.8
+#define full_speed 1.6
 #define turn_speed 0.5
 
 void canyon_navigation_fsm(void) {
@@ -18,8 +18,8 @@ void canyon_navigation_fsm(void) {
     int sharp_right = ADC1BUF1;
 
     switch (dir) {
-        case (straight):
-            prev_state = straight;
+        case (forward):
+            prev_state = forward;
             if ((FRONT_WALL(sharp_front)) && (SIDE_WALL(sharp_right))) {
             //runs into a wall and has a wall on the right
                 dir = left; //turn 90 degrees left
@@ -37,24 +37,23 @@ void canyon_navigation_fsm(void) {
             prev_state = left;
             if (stepsTaken > 400) {
             //90 degree left turn
-                dir = straight; //complete turn and continue straight
+                dir = forward; //complete turn and continue forward
                 drive(full_speed, full_speed);
-
             }
+            break;
 
         case (right):
             prev_state = right;
             if (stepsTaken > 400) {
             //90 degree right turn
-                dir = straight; //complete turn and continue straight
+                dir = forward; //complete turn and continue forward
                 drive(full_speed, full_speed);
-
             }
+            break;
         case (idle):
             prev_state = idle;
-            dir = straight; //complete turn and continue straight
+            dir = forward; //complete turn and continue forward
             drive(full_speed, full_speed);
-
          }
 
 }
