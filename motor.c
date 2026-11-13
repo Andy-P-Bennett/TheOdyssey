@@ -5,14 +5,15 @@
 
 #define FCY_HZ 4000000.0f
 #define TIMER_HZ (FCY_HZ/64.0f) // 62.5 kHz with 1:64 prescaler
-#define STEPS_PER_REV 400.0f
+#define STEPS_PER_REV 800.0f
 #define MAX_SPEED 3.0f
 #define MIN_SPEED 0.005f // rev/sec, slowest speed we can do with 16 bit timer
 #define MAX_TICKS_PER_SEC (STEPS_PER_REV * MAX_SPEED) // 600 ticks/sec
 #define PI 3.14159265f
 #define WHEEL_DIAMETER 0.1f // in meters
 #define IWD 0.05f // in meters, inter-wheel distance
-
+volatile int go_l = 0;
+volatile int go_r = 0;
 
 void drive(float speed_left, float speed_right) {
     // tank drive style stepper control - give values in rev/s
@@ -22,7 +23,8 @@ void drive(float speed_left, float speed_right) {
     // 62500 / ? = 65534 -> ? = 0.954 hz (steps/sec)-> 0.954 steps/sec / 200 steps/rev = 
     // 0.00477 rev/sec, this is the slowest speed we can do with 16 bit timer
     float period1, period2;
-
+    OC3CON1bits.OCM=  0b000;
+    OC1CON1bits.OCM=  0b000;
     // constrain speed values to be within the min/max range
     if (fabsf(speed_left) < MIN_SPEED) {speed_left = 0;}
     else if (speed_left > MAX_SPEED) {speed_left = MAX_SPEED;}
@@ -32,20 +34,23 @@ void drive(float speed_left, float speed_right) {
     else if (speed_right < -MAX_SPEED) {speed_right = -MAX_SPEED;}
 
     // set the direction pins and pwm period for each stepper
-    if (speed_left < 0) {_LATB9 = 0;} else {_LATB9 = 1;};
-    if (speed_left == 0) {OC3CON1bits.OCM=  0b000;} else {OC3CON1bits.OCM=  0b110;};
+    if (speed_left < 0) {_LATB9 = 0;} else {_LATB9 = 1;}
+    if (speed_left == 0) {go_l = 0;} else {go_l = 1;}
     period1 = TIMER_HZ / (STEPS_PER_REV * fabsf(speed_left));
     if (period1 > 65535.0f) {period1 = 65535.0f;};
     OC3RS = (unsigned int) (period1);
     OC3R = OC3RS/2;
 
     // set the direction pins and pwm period for each stepper
-    if (speed_right < 0) {_LATB8 = 1;} else {_LATB8 = 0;};
-    if (speed_right == 0) {OC1CON1bits.OCM=  0b000;} else {OC1CON1bits.OCM=  0b110;};
+    if (speed_right < 0) {_LATB8 = 1;} else {_LATB8 = 0;}
+    if (speed_right == 0) {go_r = 0;} else {go_r = 1;}
     period2 = TIMER_HZ / (STEPS_PER_REV * fabsf(speed_right));
     if (period2 > 65535.0f) {period2 = 65535.0f;};
     OC1RS = (unsigned int) (period2);
     OC1R = OC1RS/2;
+
+    if (go_l) {OC3CON1bits.OCM = 0b110;} else {OC3CON1bits.OCM = 0b000;};
+    if (go_r) {OC1CON1bits.OCM = 0b110;} else {OC1CON1bits.OCM = 0b000;};
 };
 
 void drive_mps(float left_ms, float right_ms) {
