@@ -12,7 +12,7 @@ static enum can_states prev_state = idle;
 #define FRONT_WALL(x) ((x) > FRONT_THRESH)
 #define full_speed 1.6
 #define turn_speed 0.5
-#define steps_in_turn 300
+#define steps_in_turn 240
 
 int canyon_navigation_fsm(int steps) {
     int sharp_front = ADC1BUF0;
