@@ -6,7 +6,7 @@
 
 static enum can_states can = idle;
 static enum can_states prev_state = idle;
-#define SIDE_THRESH 500 // 3.3*(500/1024) = 1.61V, which is about 8cm away from the wall, per psc spec sheet
+#define SIDE_THRESH 310 // 3.3*(310/1024) = 1V, which is about 13cm away from the wall, per psc spec sheet
 #define FRONT_THRESH 500
 #define SIDE_WALL(x) ((x) > SIDE_THRESH)
 #define FRONT_WALL(x) ((x) > FRONT_THRESH)
@@ -36,7 +36,7 @@ int canyon_navigation_fsm(int steps) {
 
         case (left):
             prev_state = left;
-            if (steps > 400) {
+            if (steps > 300) {
             //90 degree left turn
                 can = forward; //complete turn and continue forward
                 drive(full_speed, full_speed);
@@ -46,7 +46,7 @@ int canyon_navigation_fsm(int steps) {
 
         case (right):
             prev_state = right;
-            if (steps > 400) {
+            if (steps > 300) {
             //90 degree right turn
                 can = forward; //complete turn and continue forward
                 drive(full_speed, full_speed);
