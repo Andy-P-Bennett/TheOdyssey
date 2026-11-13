@@ -6,8 +6,8 @@
 
 static enum can_states can = idle;
 static enum can_states prev_state = idle;
-#define SIDE_THRESH 217 // 3.3*(217/1024) = .7V, which is about 25 cm away from the wall, per psc spec sheet
-#define FRONT_THRESH 279 // 3.3*(279/1024) = .9V, which is about 20 cm
+#define SIDE_THRESH 112 // 5*(112/1024) = .55V, which is about 30 cm away from the wall, per psc spec sheet
+#define FRONT_THRESH 69 // 5*(69/1024) = .336V, which is about 20 cm
 #define SIDE_WALL(x) ((x) > SIDE_THRESH)
 #define FRONT_WALL(x) ((x) > FRONT_THRESH)
 #define full_speed 1.6
