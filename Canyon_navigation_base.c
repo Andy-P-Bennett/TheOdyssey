@@ -12,6 +12,7 @@ static enum can_states prev_state = idle;
 #define FRONT_WALL(x) ((x) > FRONT_THRESH)
 #define full_speed 1.6
 #define turn_speed 0.5
+#define steps_in_turn 300
 
 int canyon_navigation_fsm(int steps) {
     int sharp_front = ADC1BUF0;
@@ -36,7 +37,7 @@ int canyon_navigation_fsm(int steps) {
 
         case (left):
             prev_state = left;
-            if (steps > 300) {
+            if (steps > steps_in_turn) {
             //90 degree left turn
                 can = forward; //complete turn and continue forward
                 drive(full_speed, full_speed);
@@ -46,7 +47,7 @@ int canyon_navigation_fsm(int steps) {
 
         case (right):
             prev_state = right;
-            if (steps > 300) {
+            if (steps > steps_in_turn) {
             //90 degree right turn
                 can = forward; //complete turn and continue forward
                 drive(full_speed, full_speed);
