@@ -46,7 +46,7 @@ int canyon_navigation_fsm(int steps) {
 
         case (right):
             prev_state = right;
-            if (steps > 400) {
+            if (steps > 300) {
             //90 degree right turn
                 can = forward; //complete turn and continue forward
                 drive(full_speed, full_speed);
