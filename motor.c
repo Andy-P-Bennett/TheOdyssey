@@ -12,8 +12,6 @@
 #define PI 3.14159265f
 #define WHEEL_DIAMETER 0.1f // in meters
 #define IWD 0.05f // in meters, inter-wheel distance
-volatile int go_l = 0;
-volatile int go_r = 0;
 
 void drive(float speed_left, float speed_right) {
     // tank drive style stepper control - give values in rev/s
@@ -35,7 +33,6 @@ void drive(float speed_left, float speed_right) {
 
     // set the direction pins and pwm period for each stepper
     if (speed_left < 0) {_LATB9 = 0;} else {_LATB9 = 1;}
-    if (speed_left == 0) {go_l = 0;} else {go_l = 1;}
     period1 = TIMER_HZ / (STEPS_PER_REV * fabsf(speed_left));
     if (period1 > 65535.0f) {period1 = 65535.0f;};
     OC3RS = (unsigned int) (period1);
@@ -43,15 +40,16 @@ void drive(float speed_left, float speed_right) {
 
     // set the direction pins and pwm period for each stepper
     if (speed_right < 0) {_LATB8 = 1;} else {_LATB8 = 0;}
-    if (speed_right == 0) {go_r = 0;} else {go_r = 1;}
     period2 = TIMER_HZ / (STEPS_PER_REV * fabsf(speed_right));
     if (period2 > 65535.0f) {period2 = 65535.0f;};
     OC1RS = (unsigned int) (period2);
     OC1R = OC1RS/2;
 
-    if (go_l) {OC3CON1bits.OCM = 0b110;} else {OC3CON1bits.OCM = 0b000;};
-    if (go_r) {OC1CON1bits.OCM = 0b110;} else {OC1CON1bits.OCM = 0b000;};
+    if (speed_left) {OC3CON1bits.OCM = 0b110;} else {OC3CON1bits.OCM = 0b000;};
+    if (speed_right) {OC1CON1bits.OCM = 0b110;} else {OC1CON1bits.OCM = 0b000;};
 };
+
+// void drive_ramp()
 
 void drive_mps(float left_ms, float right_ms) {
     // conversion layer to drive motors in m/s instead of rev/s

@@ -10,8 +10,8 @@ static enum can_states prev_state = idle;
 #define FRONT_THRESH 279 // 3.3*(279/1024) = .9V, which is about 20 cm
 #define SIDE_WALL(x) ((x) > SIDE_THRESH)
 #define FRONT_WALL(x) ((x) > FRONT_THRESH)
-#define full_speed 1.6
-#define turn_speed 1.0
+#define full_speed 1.0
+#define turn_speed 0.7
 #define steps_in_turn 480
 
 int canyon_navigation_fsm(int steps) {
