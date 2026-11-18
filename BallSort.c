@@ -54,7 +54,7 @@ int CollectSample(int steps_taken, int time) {
         case (reorientate):
             if (steps_taken >= steps_in_turn) {
                 drive(speed, speed);
-                return 0;
+                return 2; // this will end this task
             }
             return 0;
     }
@@ -106,7 +106,7 @@ int ReturnSample(int steps_taken, int time) {
         case (reorientate):
             if (steps_taken >= steps_in_turn) {
                 drive(speed, speed);
-                return 0;
+                return 2; // this will end the task
             }
             return 0;
     }

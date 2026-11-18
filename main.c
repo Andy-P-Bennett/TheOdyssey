@@ -96,3 +96,41 @@ int main(void) {
         // drive(0.5, 0.5);
     }
 }
+
+
+enum primary_state {line_follow, canyon_navigation, retrieve_sample, return_sample, satellite_comm};
+enum primary_state ps = line_follow;
+
+int time = 0; // set up timer this is just a place holder
+
+void fsm(void) {
+    switch(ps) {
+        case(line_follow):
+            if (1) {} // fill this out
+            // need if statement to check IR sensor and to commit sample retrieve
+            // need if stateent to check right SHARP and check if in canyon (canyon nav) or ball return (sample return)
+            break;
+        
+        case(retrieve_sample):
+            int cs = CollectSample(stepsTaken, time);
+            if (cs == 1) {
+                stepsTaken = 0;
+                time = 0;
+            }
+            else if (cs == 2) {
+                ps = line_follow; // I think this is all that is needed, maybe reset timer and steps?
+            }
+            break;
+
+        case(return_sample):
+            int rs = ReturnSample(stepsTaken, time);
+            if (rs == 1) {
+                stepsTaken = 0;
+                time = 0;
+            }
+            else if (rs == 2) {
+                ps = line_follow; // I think this is all that is needed, maybe reset timer and steps?
+            }
+            break;
+    }
+}
