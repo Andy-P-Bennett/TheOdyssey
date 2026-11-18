@@ -1,17 +1,14 @@
 #include "xc.h"
 #include "motor.h"
 #include "Line_following_base.h"
+#include "Definitions.h"
 
 
 //-------------------------------------------------------------------------
 static enum m1_states dir = straight;
 static enum m1_states prev_state = stop;
-#define THRESH 500
-#define BLACK(x) ((x) > THRESH)
-#define WHITE(x) ((x) < THRESH)
-#define full_speed 0.8
-#define adjust_speed 0.4
-#define turn_speed 0.2
+#define BLACK(x) ((x) > line_qrd_thresh)
+#define WHITE(x) ((x) < line_qrd_thresh)
 
 void line_following_fsm(void) {
     int qrd_left = ADC1BUF14;
@@ -31,24 +28,24 @@ void line_following_fsm(void) {
             else if ((WHITE(qrd_left)) && (WHITE(qrd_center)) && (BLACK(qrd_right))) {
             //Left and Int are white, and Right is black
                 dir = adjust_left; //small adjustment left
-                drive(adjust_speed, full_speed); // slow left wheel to slight turn left
+                drive(turn_speed, full_speed); // slow left wheel to slight turn left
 
             }
             else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (WHITE(qrd_right))) {
             //Left and Int are black, and Right is white
                 dir = turn_right; //large adjustment right
-                drive(full_speed, turn_speed); // stop right wheel to hard turn right
+                drive(full_speed, (0.5 * full_speed)); // stop right wheel to hard turn right
             }
             else if ((WHITE(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
                 //Int and Right are black, and Left is white
                 dir = turn_left; //large adjustment left
-                drive(turn_speed, full_speed); // stop left wheel to hard turn left
+                drive((0.5 * full_speed), full_speed); // stop left wheel to hard turn left
             }
         
             else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) && (WHITE(qrd_right))) {
             //Int and Left are black, and Right is white
                 dir = adjust_right; //small adjustment right
-                drive(full_speed, adjust_speed); // slow right wheel to slight turn right
+                drive(full_speed, turn_speed); // slow right wheel to slight turn right
             }
             break;
         
@@ -57,24 +54,24 @@ void line_following_fsm(void) {
             if ((WHITE(qrd_left)) && (WHITE(qrd_center)) && (BLACK(qrd_right))) {
             //Left and Int are white, and Right is black
                 dir = adjust_left; //small adjustment left
-                drive(adjust_speed, full_speed); // slow left wheel to slight turn left
+                drive(turn_speed, full_speed); // slow left wheel to slight turn left
 
             }
             else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (WHITE(qrd_right))) {
             //Left and Int are black, and Right is white
                 dir = turn_right; //large adjustment right
-                drive(full_speed, turn_speed); // stop right wheel to hard turn right
+                drive(full_speed, (0.5 * full_speed)); // stop right wheel to hard turn right
             }
             else if ((WHITE(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
                 //Int and Right are black, and Left is white
                 dir = turn_left; //large adjustment left
-                drive(turn_speed, full_speed); // stop left wheel to hard turn left
+                drive((0.5 * full_speed), full_speed); // stop left wheel to hard turn left
             }
         
             else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) && (WHITE(qrd_right))) {
             //Int and Left are black, and Right is white
                 dir = adjust_right; //small adjustment right
-                drive(full_speed, adjust_speed); // slow right wheel to slight turn right
+                drive(full_speed, turn_speed); // slow right wheel to slight turn right
             }
             // else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
             //     dir = stop; // stop when completely missing the line
@@ -93,18 +90,18 @@ void line_following_fsm(void) {
             else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (WHITE(qrd_right))) {
             //Left and Int are black, and Right is white
                 dir = turn_right; //large adjustment right
-                drive(full_speed, turn_speed); // stop right wheel to hard turn right
+                drive(full_speed, (0.5 * full_speed)); // stop right wheel to hard turn right
             }
             else if ((WHITE(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
                 //Int and Right are black, and Left is white
                 dir = turn_left; //large adjustment left
-                drive(turn_speed, full_speed); // stop left wheel to hard turn left
+                drive((0.5 * full_speed), full_speed); // stop left wheel to hard turn left
             }
         
             else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) && (WHITE(qrd_right))) {
             //Int and Left are black, and Right is white
                 dir = adjust_right; //small adjustment right
-                drive(full_speed, adjust_speed); // slow right wheel to slight turn right
+                drive(full_speed, turn_speed); // slow right wheel to slight turn right
             }
             // else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
             //     dir = stop; // stop when completely missing the line
@@ -117,18 +114,18 @@ void line_following_fsm(void) {
             if ((WHITE(qrd_left)) && (WHITE(qrd_center)) && (BLACK(qrd_right))) {
             //Left and Int are white, and Right is black
                 dir = adjust_left; //small adjustment left
-                drive(adjust_speed, full_speed); // slow left wheel to slight turn left
+                drive(turn_speed, full_speed); // slow left wheel to slight turn left
 
             }
             else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (WHITE(qrd_right))) {
             //Left and Int are black, and Right is white
                 dir = turn_right; //large adjustment right
-                drive(full_speed, turn_speed); // stop right wheel to hard turn right
+                drive(full_speed, (0.5 * full_speed)); // stop right wheel to hard turn right
             }
             else if ((WHITE(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
                 //Int and Right are black, and Left is white
                 dir = turn_left; //large adjustment left
-                drive(turn_speed, full_speed); // stop left wheel to hard turn left
+                drive((0.5 * full_speed), full_speed); // stop left wheel to hard turn left
             }
         
             else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) &&  (BLACK(qrd_right))) {
@@ -147,13 +144,13 @@ void line_following_fsm(void) {
             if ((WHITE(qrd_left)) && (WHITE(qrd_center)) && (BLACK(qrd_right))) {
             //Left and Int are white, and Right is black
                 dir = adjust_left; //small adjustment left
-                drive(adjust_speed, full_speed); // slow left wheel to slight turn left
+                drive(turn_speed, full_speed); // slow left wheel to slight turn left
 
             }
             else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (WHITE(qrd_right))) {
             //Left and Int are black, and Right is white
                 dir = turn_right; //large adjustment right
-                drive(full_speed, turn_speed); // stop right wheel to hard turn right
+                drive(full_speed, (0.5 * full_speed)); // stop right wheel to hard turn right
             }
             else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) &&  (BLACK(qrd_right))) {
                 dir = straight; // return to straight
@@ -163,7 +160,7 @@ void line_following_fsm(void) {
             else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) && (WHITE(qrd_right))) {
             //Int and Left are black, and Right is white
                 dir = adjust_right; //small adjustment right
-                drive(full_speed, adjust_speed); // slow right wheel to slight turn right
+                drive(full_speed, turn_speed); // slow right wheel to slight turn right
             }
             // else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
             //     dir = stop; // stop when completely missing the line
@@ -174,7 +171,7 @@ void line_following_fsm(void) {
             if ((WHITE(qrd_left)) && (WHITE(qrd_center)) && (BLACK(qrd_right))) {
             //Left and Int are white, and Right is black
                 dir = adjust_left; //small adjustment left
-                drive(adjust_speed, full_speed); // slow left wheel to slight turn left
+                drive(turn_speed, full_speed); // slow left wheel to slight turn left
 
             }
             else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) &&  (BLACK(qrd_right))) {
@@ -184,17 +181,13 @@ void line_following_fsm(void) {
             else if ((WHITE(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
                 //Int and Right are black, and Left is white
                 dir = turn_left; //large adjustment left
-                drive(turn_speed, full_speed); // stop left wheel to hard turn left
+                drive((0.5 * full_speed), full_speed); // stop left wheel to hard turn left
             }
         
             else if ((BLACK(qrd_left)) && (WHITE(qrd_center)) && (WHITE(qrd_right))) {
             //Int and Left are black, and Right is white
                 dir = adjust_right; //small adjustment right
-                drive(full_speed, adjust_speed); // slow right wheel to slight turn right
+                drive(full_speed, turn_speed); // slow right wheel to slight turn right
             }
-            // else if ((BLACK(qrd_left)) && (BLACK(qrd_center)) && (BLACK(qrd_right))) {
-            //     dir = stop; // stop when completely missing the line
-            //     drive(0, 0);
-            // };
     }
 }
