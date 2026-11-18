@@ -3,7 +3,6 @@
 #include "motor.h"
 #include "Definitions.h"
 
-#define SHARP_THRESH 200 // this definitely needs to be higher, I'm just not sure how close we need to get +++++THIS IS SPECIFIC TO THIS FUNCTION+++++
 #define TIME_THRESH 100 // I haven't done the calculations for this or set the timere up yet +++unique to this function+++
 #define steps_to_return 500 // I don't know what this should be, I wasn't able to measure it
 
@@ -25,7 +24,7 @@ int CollectSample(int steps_taken, int time) {
             return 0;
 
         case (drive_to_objective):
-            if (ADC1BUF0 >= SHARP_THRESH) { // check sharp sensor to determine distance to drop
+            if (ADC1BUF0 >= close_sharp_thresh) { // check sharp sensor to determine distance to drop
                 drive(0, 0);
                 cur_step_col = wait;
                 return 1; // reset timer

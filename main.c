@@ -99,7 +99,7 @@ int main(void) {
 }
 
 
-enum primary_state {line_follow, canyon_navigation, retrieve_sample, return_sample, satellite_comm, check_wall};
+enum primary_state {line_follow, canyon_navigation, retrieve_sample, return_sample, satellite_comm, check_wall, intersection};
 enum primary_state ps = line_follow;
 
 int time = 0; // set up timer this is just a place holder
@@ -126,10 +126,7 @@ void fsm(void) {
                 drive(turn_speed, full_speed);
                 stepsTaken = 0;
                 // idk how long to turn for, we'll have to figure this out, maybe use arcade drive?
-                if (sample_recieved && sample_deposited && canyon_navigated) { // this is the statement to check if the course is complete
-                    // put code here for transmission
-                }
-                else {drive(full_speed, full_speed);} // continue to follow line if the route is not completed
+                ps = intersection;
             }
             else if (sharp_right > right_sharp_thresh) { // wall or bin detected on right
                 drive(turn_speed, -turn_speed);
@@ -176,6 +173,14 @@ void fsm(void) {
             }
             break;
 
+        case(satellite_comm):
+            if (sharp_front >= close_sharp_thresh) {
+                drive(0, 0);
+                // start pwm for locating satellite and checkin the top IR sensor
+            }
+            else {line_following_fsm;}
+            break;
+
         case(check_wall):
             if (stepsTaken >= steps_in_turn) {
                 if (sharp_front >= front_sharp_thresh) {ps = canyon_navigation;}
@@ -186,5 +191,16 @@ void fsm(void) {
                 drive(full_speed, full_speed);
             }
             break;
-    }
+
+        case(intersection):
+            if (stepsTaken >= steps_in_curve) {
+                if (sample_recieved && sample_deposited && canyon_navigated) { // this is the statement to check if the course is complete
+                    ps = satellite_comm;
+                }
+                else {
+                    ps = line_follow;
+                    drive(full_speed, full_speed);
+                }
+            }
+            break;
 }
