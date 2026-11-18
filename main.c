@@ -4,6 +4,7 @@
 #include "Line_following_base.h"
 #include "AnalogInitialization.h"
 #include "Canyon_navigation_base.h"
+#include "Definitions.h"
 #pragma config FNOSC = FRC //8 MHz oscillator
 #pragma config FWDTEN = OFF // Disable watchdog timer while testing
 //...otherwise, the robot resets every like 3 minutes and acts possessed
@@ -98,19 +99,59 @@ int main(void) {
 }
 
 
-enum primary_state {line_follow, canyon_navigation, retrieve_sample, return_sample, satellite_comm};
+enum primary_state {line_follow, canyon_navigation, retrieve_sample, return_sample, satellite_comm, check_wall};
 enum primary_state ps = line_follow;
 
 int time = 0; // set up timer this is just a place holder
+volatile int sample_recieved = 0; // use these as checks for returning to transmit
+volatile int sample_deposited = 0;
+volatile int canyon_navigated = 0;
 
 void fsm(void) {
+    int sharp_front = ADC1BUF0; // pin 2
+    int sharp_right = ADC1BUF1; // pin 3
+    int qrd_right = ADC1BUF4; // pin 6
+    int qrd_center = ADC1BUF13; // pin 7
+    int qrd_left = ADC1BUF14; // pin 8
+    int qrd_int = ADC1BUF12; // pin 15
+    int qrd_sample = ADC1BUF11; // pin 16
+    int ir_right = ADC1BUF10; // pin 17
+    int ir_top = ADC1BUF9; // pin 18
     switch(ps) {
         case(line_follow):
-            if (1) {} // fill this out
-            // need if statement to check IR sensor and to commit sample retrieve
-            // need if stateent to check right SHARP and check if in canyon (canyon nav) or ball return (sample return)
+            if (ir_right > ir_thresh && !sample_recieved) { // identify if sample is ready to be recieved
+                ps = retrieve_sample;
+            }
+            else if (qrd_int >= line_qrd_thresh) { // identify if intersection
+                drive(turn_speed, full_speed);
+                stepsTaken = 0;
+                // idk how long to turn for, we'll have to figure this out, maybe use arcade drive?
+                if (sample_recieved && sample_deposited && canyon_navigated) { // this is the statement to check if the course is complete
+                    // put code here for transmission
+                }
+                else {drive(full_speed, full_speed);} // continue to follow line if the route is not completed
+            }
+            else if (sharp_right > right_sharp_thresh) { // wall or bin detected on right
+                drive(turn_speed, -turn_speed);
+                stepsTaken = 0;
+                ps = check_wall;
+            }
+            else {line_following_fsm();}
             break;
         
+        case (canyon_navigation): // switch to line following if any track qrd senses the line
+            if (qrd_left >= line_qrd_thresh || qrd_right >= line_qrd_thresh || qrd_center >= line_qrd_thresh || qrd_int >= line_qrd_thresh) {
+                if (sharp_right > right_sharp_thresh) {drive(-turn_speed, turn_speed);} // turn left if wall on right
+                else {drive(-turn_speed, turn_speed);} // turn right if no wall on right
+                stepsTaken = 0;
+                while (stepsTaken < steps_in_turn) {} // this is here to allow the robot to turn without exiting the function
+                drive(full_speed, full_speed); // return to forward drive
+                ps = line_follow;
+                canyon_navigated = 1; // notes that the canyon portion is complete
+            }
+            else if (canyon_navigation_fsm(stepsTaken)) {stepsTaken = 0;} // will not run canyon nav if the QRDs pick up the line
+            break;
+
         case(retrieve_sample):
             int cs = CollectSample(stepsTaken, time);
             if (cs == 1) {
@@ -119,6 +160,7 @@ void fsm(void) {
             }
             else if (cs == 2) {
                 ps = line_follow; // I think this is all that is needed, maybe reset timer and steps?
+                sample_recieved = 1;
             }
             break;
 
@@ -130,6 +172,18 @@ void fsm(void) {
             }
             else if (rs == 2) {
                 ps = line_follow; // I think this is all that is needed, maybe reset timer and steps?
+                sample_deposited = 1;
+            }
+            break;
+
+        case(check_wall):
+            if (stepsTaken >= steps_in_turn) {
+                if (sharp_front >= front_sharp_thresh) {ps = canyon_navigation;}
+                else {ps = return_sample;}
+                drive(-turn_speed, turn_speed); // return to facing forward
+                stepsTaken = 0;
+                while (stepsTaken < steps_in_turn) {} // I couldn't think of a better way to do this lol
+                drive(full_speed, full_speed);
             }
             break;
     }
