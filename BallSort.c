@@ -60,7 +60,7 @@ enum steps cur_step_ret = stop_movement; // state of sample return
 int ReturnSample(int steps_taken, int time) {
     switch (cur_step_ret) {
         case (stop_movement):
-            if (ADC1BUF11 >= line_qrd_thresh) { // check sample
+            if (ADC1BUF11 <= line_qrd_thresh) { // check sample
                 drive(-turn_speed, turn_speed); // left turn
             }
             else {drive(turn_speed, -turn_speed);} // right turn
