@@ -1,10 +1,10 @@
 #include "xc.h"
-// #include "FSM.h"
 #include "motor.h"
 #include "Line_following_base.h"
 #include "AnalogInitialization.h"
 #include "Canyon_navigation_base.h"
 #include "Definitions.h"
+#include "BallSort.h"
 #pragma config FNOSC = FRC //8 MHz oscillator
 #pragma config FWDTEN = OFF // Disable watchdog timer while testing
 //...otherwise, the robot resets every like 3 minutes and acts possessed
@@ -114,9 +114,11 @@ void fsm(void) {
     int qrd_center = ADC1BUF13; // pin 7
     int qrd_left = ADC1BUF14; // pin 8
     int qrd_int = ADC1BUF12; // pin 15
-    int qrd_sample = ADC1BUF11; // pin 16
+    // int qrd_sample = ADC1BUF11; // pin 16
     int ir_right = ADC1BUF10; // pin 17
-    int ir_top = ADC1BUF9; // pin 18
+    // int ir_top = ADC1BUF9; // pin 18
+    int cs = CollectSample(stepsTaken, time);
+    int rs = ReturnSample(stepsTaken, time);
     switch(ps) {
         case(line_follow):
             if (ir_right < ir_thresh && !sample_recieved) { // identify if sample is ready to be recieved
@@ -133,7 +135,7 @@ void fsm(void) {
                 stepsTaken = 0;
                 ps = check_wall;
             }
-            else {line_following_fsm();}
+            else {line_following_fsm;}
             break;
         
         case (canyon_navigation): // switch to line following if any track qrd senses the line
@@ -149,8 +151,7 @@ void fsm(void) {
             else if (canyon_navigation_fsm(stepsTaken)) {stepsTaken = 0;} // will not run canyon nav if the QRDs pick up the line
             break;
 
-        case(retrieve_sample):
-            int cs = CollectSample(stepsTaken, time);
+        case(retrieve_sample): 
             if (cs == 1) {
                 stepsTaken = 0;
                 time = 0;
@@ -160,9 +161,8 @@ void fsm(void) {
                 sample_recieved = 1;
             }
             break;
-
-        case(return_sample):
-            int rs = ReturnSample(stepsTaken, time);
+        
+        case(return_sample): 
             if (rs == 1) {
                 stepsTaken = 0;
                 time = 0;
@@ -172,7 +172,7 @@ void fsm(void) {
                 sample_deposited = 1;
             }
             break;
-
+        
         case(satellite_comm):
             if (sharp_front >= close_sharp_thresh) {
                 drive(0, 0);
@@ -203,4 +203,5 @@ void fsm(void) {
                 }
             }
             break;
+    }
 }
