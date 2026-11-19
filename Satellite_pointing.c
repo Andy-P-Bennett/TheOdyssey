@@ -16,24 +16,23 @@ void satellite_comm (void){
     
     OC2CON1bits.OCM = 0b110; // Start PWM on pin 14. Set to zero to disable.
 
-    
+    int sharp_front = ADC1BUF0;
 
-
-    if (sharp_front < close_sharp_thresh) {
+     if (sharp_front < close_sharp_thresh) {
         drive(full_speed, full_speed); //keep driving forward until close to wall
     }   else {
         drive(0, 0); // stop
-    }
+            }
+
+        
     while (1) {
         int ir_sensing = ANSB14; 
         if (ir_sensing < ir_thresh) {
         OC2R ++; // turn servo until it points at the antenna
-        for(int i = 0; i <100, i++) {
-            
+        for(int i = 0; i <100, i++) 
         }
-    }
     _LATB7 = 1;//turn on laser
-
+    }
 }
 
 
