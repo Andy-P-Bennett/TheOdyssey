@@ -1,9 +1,11 @@
 //turn servo until it is pointing at the antenna, then turn on the laser
+#include "xc.h"
+#include "Definitions.h"
+#include "motor.h"
 
 
 satellite_comm {
     //set up PWM for servo
-    _RCDIV = 0b010; //Divide by 4 postscaler
     OC2CON1 = 0;
     OC2CON2 = 0;
     OC2CON1bits.OCTSEL = 0b111;
@@ -13,7 +15,6 @@ satellite_comm {
     OC2R = 500;
     
     //OC2CON1bits.OCM = 0b110; // Start PWM on pin 14. Set to zero to disable.
-
 
 
     antenna_value = 0; //this is a placeholder value, will need to be updated after testing
