@@ -1,0 +1,17 @@
+//turn servo until it is pointing at the antenna, then turn on the laser
+
+
+satellite_comm {
+    if (sharp_front < close_sharp_thresh) {
+        drive(full_speed, full_speed); //keep driving forward until close to wall
+    }   else {
+        drive(0, 0); // stop
+    }
+    while (servo_angle < antenna_angle) {
+        // turn servo until it points at the antenna
+    }
+    _LATB7 = 0;//turn on laser
+
+}
+
+
