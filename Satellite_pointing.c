@@ -22,14 +22,14 @@ void satellite_comm (void){
         drive(full_speed, full_speed); //keep driving forward until close to wall
     }   else {
         drive(0, 0); // stop
-            }
+    }
 
         
     while (1) {
-        int ir_sensing = ANSB14; 
-        if (ir_sensing < ir_thresh) {
-        OC2R ++; // turn servo until it points at the antenna
-        for(int i = 0; i <100, i++) 
+        int ir_top = ADC1BUF9; 
+        if (ir_top < ir_thresh) {
+            OC2R ++; // turn servo until it points at the antenna
+            for(int i = 0; i <= 100; i++) {}
         }
     _LATB7 = 1;//turn on laser
     }

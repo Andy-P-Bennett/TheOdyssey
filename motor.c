@@ -21,6 +21,8 @@ void drive(float speed_left, float speed_right) {
     // 62500 / ? = 65534 -> ? = 0.954 hz (steps/sec)-> 0.954 steps/sec / 200 steps/rev = 
     // 0.00477 rev/sec, this is the slowest speed we can do with 16 bit timer
     float period1, period2;
+
+    // Disable motors synchronously
     OC3CON1bits.OCM=  0b000;
     OC1CON1bits.OCM=  0b000;
     // constrain speed values to be within the min/max range
@@ -45,6 +47,7 @@ void drive(float speed_left, float speed_right) {
     OC1RS = (unsigned int) (period2);
     OC1R = OC1RS/2;
 
+    // ensure motors start at the same time
     if (speed_left) {OC3CON1bits.OCM = 0b110;} else {OC3CON1bits.OCM = 0b000;};
     if (speed_right) {OC1CON1bits.OCM = 0b110;} else {OC1CON1bits.OCM = 0b000;};
 };

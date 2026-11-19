@@ -119,7 +119,7 @@ void fsm(void) {
     int ir_top = ADC1BUF9; // pin 18
     switch(ps) {
         case(line_follow):
-            if (ir_right > ir_thresh && !sample_recieved) { // identify if sample is ready to be recieved
+            if (ir_right < ir_thresh && !sample_recieved) { // identify if sample is ready to be recieved
                 ps = retrieve_sample;
             }
             else if (qrd_int >= line_qrd_thresh) { // identify if intersection
