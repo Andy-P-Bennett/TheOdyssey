@@ -104,22 +104,25 @@ int main(void) {
         int rs;
         switch(ps) {
             case(line_follow):
-                if (ir_right < ir_thresh && !sample_recieved) { // identify if sample is ready to be recieved
-                    ps = retrieve_sample;
-                    break;
-                }
-                else if (qrd_int <= line_qrd_thresh) { // identify if intersection
-                    break; //FOR TESTING PURPOSES, REMOVE LATER
-                    drive(turn_speed, full_speed);
-                    stepsTaken = 0;
-                    ps = intersection;
-                    break;
-                }
-                else if (sharp_right > right_sharp_thresh) { // wall or bin detected on right
-                    drive(turn_speed, -turn_speed);
-                    stepsTaken = 0;
-                    ps = check_wall;
-                    break;
+                // if (ir_right < ir_thresh && !sample_recieved) { // identify if sample is ready to be recieved
+                //     ps = retrieve_sample;
+                //     break;
+                // }
+                // else if (qrd_int <= line_qrd_thresh) { // identify if intersection
+                //     break; //FOR TESTING PURPOSES, REMOVE LATER
+                //     drive(turn_speed, full_speed);
+                //     stepsTaken = 0;
+                //     ps = intersection;
+                //     break;
+                // }
+                // else if (sharp_right > right_sharp_thresh) { // wall or bin detected on right
+                //     drive(turn_speed, -turn_speed);
+                //     stepsTaken = 0;
+                //     ps = check_wall;
+                //     break;
+                // }
+                if (sharp_right > right_sharp_thresh) {
+                    ps = return_sample;
                 }
                 line_following_fsm();            
                 break;
@@ -199,3 +202,107 @@ int main(void) {
         // drive(0.5, 0.5);
     }
 }
+
+// void og_fsm(void) {
+//     int sharp_front = ADC1BUF0; // pin 2
+//         int sharp_right = ADC1BUF1; // pin 3
+//         int qrd_right = ADC1BUF4; // pin 6
+//         int qrd_center = ADC1BUF13; // pin 7
+//         int qrd_left = ADC1BUF14; // pin 8
+//         int qrd_int = ADC1BUF12; // pin 15
+//         // int qrd_sample = ADC1BUF11; // pin 16
+//         int ir_right = ADC1BUF10; // pin 17
+//         // int ir_top = ADC1BUF9; // pin 18
+//         int cs;
+//         int rs;
+//         switch(ps) {
+//             case(line_follow):
+//                 if (ir_right < ir_thresh && !sample_recieved) { // identify if sample is ready to be recieved
+//                     ps = retrieve_sample;
+//                     break;
+//                 }
+//                 else if (qrd_int <= line_qrd_thresh) { // identify if intersection
+//                     break; //FOR TESTING PURPOSES, REMOVE LATER
+//                     drive(turn_speed, full_speed);
+//                     stepsTaken = 0;
+//                     ps = intersection;
+//                     break;
+//                 }
+//                 else if (sharp_right > right_sharp_thresh) { // wall or bin detected on right
+//                     drive(turn_speed, -turn_speed);
+//                     stepsTaken = 0;
+//                     ps = check_wall;
+//                     break;
+//                 }
+//                 line_following_fsm();            
+//                 break;
+            
+//             case (canyon_navigation): // switch to line following if any track qrd senses the line
+//                 if (qrd_left >= line_qrd_thresh || qrd_right >= line_qrd_thresh || qrd_center >= line_qrd_thresh || qrd_int <= line_qrd_thresh) {
+//                     if (sharp_right > right_sharp_thresh) {drive(-turn_speed, turn_speed);} // turn left if wall on right
+//                     else {drive(-turn_speed, turn_speed);} // turn right if no wall on right
+//                     stepsTaken = 0;
+//                     while (stepsTaken < steps_in_turn) {} // this is here to allow the robot to turn without exiting the function
+//                     drive(full_speed, full_speed); // return to forward drive
+//                     ps = line_follow;
+//                     canyon_navigated = 1; // notes that the canyon portion is complete
+//                 }
+//                 else if (canyon_navigation_fsm(stepsTaken)) {stepsTaken = 0;} // will not run canyon nav if the QRDs pick up the line
+//                 break;
+
+//             case(retrieve_sample): 
+//                 cs = CollectSample(stepsTaken, time);
+//                 if (cs == 1) {
+//                     stepsTaken = 0;
+//                     time = 0;
+//                 }
+//                 else if (cs == 2) {
+//                     ps = line_follow; // I think this is all that is needed, maybe reset timer and steps?
+//                     sample_recieved = 1;
+//                 }
+//                 break;
+            
+//             case(return_sample): 
+//                 rs = ReturnSample(stepsTaken, time);
+//                 if (rs == 1) {
+//                     stepsTaken = 0;
+//                     time = 0;
+//                 }
+//                 else if (rs == 2) {
+//                     ps = line_follow; // I think this is all that is needed, maybe reset timer and steps?
+//                     sample_deposited = 1;
+//                 }
+//                 break;
+            
+//             case(satellite_comm):
+//                 if (sharp_front >= close_sharp_thresh) {
+//                     drive(0, 0);
+//                     // start pwm for locating satellite and checkin the top IR sensor
+//                 }
+//                 else {line_following_fsm;}
+//                 break;
+
+//             case(check_wall):
+//                 if (stepsTaken >= steps_in_turn) {
+//                     if (sharp_front >= front_sharp_thresh) {ps = canyon_navigation;}
+//                     else {ps = return_sample;}
+//                     drive(-turn_speed, turn_speed); // return to facing forward
+//                     stepsTaken = 0;
+//                     while (stepsTaken < steps_in_turn) {} // I couldn't think of a better way to do this lol
+//                     drive(full_speed, full_speed);
+//                 }
+//                 break;
+
+//             case(intersection):
+//                 if (stepsTaken >= steps_in_curve) {
+//                     if (sample_recieved && sample_deposited && canyon_navigated) { // this is the statement to check if the course is complete
+//                         ps = satellite_comm;
+//                     }
+//                     else {
+//                         ps = line_follow;
+//                         drive(full_speed, full_speed);
+//                     }
+//                 }
+//                 break;
+//         }
+// }
