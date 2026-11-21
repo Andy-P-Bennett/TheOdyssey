@@ -142,11 +142,11 @@ int main(void) {
 
             case(retrieve_sample): 
                 cs = CollectSample(stepsTaken, time);
-                if (cs == 1) {
+                if (cs == 1) { // reset step counting as needed between collect task states
                     stepsTaken = 0;
                     time = 0;
                 }
-                else if (cs == 2) {
+                else if (cs == 2) { // ball has been collected, robot is near line, return to line following
                     ps = line_follow; // I think this is all that is needed, maybe reset timer and steps?
                     sample_recieved = 1;
                 }
@@ -158,7 +158,7 @@ int main(void) {
                     stepsTaken = 0;
                     time = 0;
                 }
-                else if (rs == 2) {
+                else if (rs == 2) { // ball has been deposited, robot is near line, return to line following
                     ps = line_follow; // I think this is all that is needed, maybe reset timer and steps?
                     sample_deposited = 1;
                 }

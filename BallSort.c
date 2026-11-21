@@ -12,8 +12,16 @@ int CollectSample(int steps_taken, int time) {
     switch (cur_step_col) {
         case (stop_movement):
             drive(turn_speed, -turn_speed); // right turn
-            cur_step_col = turn_to_objective; // change to state of turning
+            cur_step_col = center_robot; // move robot forward to center between return the troughs
             return 1; // reset step counting
+
+        case(center_robot):
+            if (steps_taken >= steps_in_turn) {
+                drive(full_speed, full_speed); // move straight
+                cur_step_col = turn_to_objective; // change to state of turning
+                return 1; // reset step counting
+            }
+            return 0;
         
         case (turn_to_objective):
             if (steps_taken >= steps_in_turn) {
@@ -56,16 +64,28 @@ int CollectSample(int steps_taken, int time) {
     }
 }
 
-enum steps cur_step_ret = stop_movement; // state of sample return
+enum steps cur_step_ret = init; // state of sample return
 int ReturnSample(int steps_taken, int time) {
     switch (cur_step_ret) {
+        case (init):
+            drive(full_speed, full_speed); // move straight to return sample
+            cur_step_ret = center_robot; // change to state of turning
+            return 0;
+
         case (stop_movement):
-            if (ADC1BUF11 <= line_qrd_thresh) { // check sample
-                drive(-turn_speed, turn_speed); // left turn
+            if (ADC1BUF11 <= sample_qrd_thresh) { // check sample
+                drive(-turn_speed, turn_speed); // left turn - only 
             }
             else {drive(turn_speed, -turn_speed);} // right turn
             cur_step_ret = turn_to_objective; // change to state of turning
             return 1; // reset step counting
+
+        case(center_robot):
+            if (steps_taken >= steps_in_turn) {
+                cur_step_ret = stop_movement; // change to state of turning
+                return 1; // reset step counting
+            }
+            return 0;
         
         case (turn_to_objective):
             if (steps_taken >= steps_in_turn) {
