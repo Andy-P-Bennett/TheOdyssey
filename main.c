@@ -112,6 +112,13 @@ void fsm(void) {
     int qrd_sample = ADC1BUF11; // pin 16
     int ir_right = ADC1BUF10; // pin 17
     int ir_top = ADC1BUF9; // pin 18
+
+    int cs; // collect sample
+    int rs; // return sample
+    int inter; // intersection
+    int ar; // align right
+    int al; // align left
+
     switch(ps) {
         // Adam 11/24
         case(line_follow):
@@ -154,7 +161,7 @@ void fsm(void) {
 
         // Adam 11/24
         case(retrieve_sample):
-            int cs = CollectSample(stepsTaken, time);
+            cs = CollectSample(stepsTaken, time);
             if (cs == 1) {
                 stepsTaken = 0;
                 time = 0;
@@ -167,7 +174,7 @@ void fsm(void) {
 
         // Adam 11/24
         case(return_sample):
-            int rs = ReturnSample(stepsTaken, time);
+            rs = ReturnSample(stepsTaken, time);
             if (rs == 1) {
                 stepsTaken = 0;
                 time = 0;
@@ -200,7 +207,7 @@ void fsm(void) {
 
         // Adam 11/24
         case(intersection):
-            int inter = return_to_line(left, stepsTaken);
+            inter = return_to_line(left, stepsTaken);
             if (inter == 1) {
                 stepsTaken = 0;
             }
@@ -219,7 +226,7 @@ void fsm(void) {
         
         // Adam 11/24
         case(align_right):
-            int ar = return_to_line(right, stepsTaken);
+            ar = return_to_line(right, stepsTaken);
             if (ar == 1) {
                 stepsTaken = 0;
             }
@@ -230,7 +237,7 @@ void fsm(void) {
         
         //Adam 11/24
         case(align_left):
-            int al = return_to_line(left, stepsTaken);
+            al = return_to_line(left, stepsTaken);
             if (al == 1) {
                 stepsTaken = 0;
             }
@@ -238,4 +245,5 @@ void fsm(void) {
                 ps = line_follow;
             }
             break;
+    }
 }

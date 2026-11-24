@@ -42,7 +42,7 @@ int CollectSample(int steps_taken, int time) {
         case (wait):
             if (time >= TIME_THRESH) {
                 drive(-full_speed, -full_speed); // reverse robot
-                cur_step_col = return_to_line; // change to state of returning to the line
+                cur_step_col = drive_to_line; // change to state of returning to the line
                 return 1; // reset step counting
             }
             return 0;
