@@ -86,7 +86,7 @@ int main(void) {
 //    _T1IE = 1;
 //    _T1IF = 0;
     init_an();
-    drive(0.5, 0.5);
+    drive(full_speed, full_speed);
 
     while(1) {
         fsm();
@@ -94,7 +94,7 @@ int main(void) {
 }
 
 
-enum primary_state {line_follow, canyon_navigation, retrieve_sample, return_sample, satellite_comm, check_wall, intersection};
+enum primary_state {line_follow, canyon_navigation, retrieve_sample, return_sample, satellite_comm, intersection, align_right, align_left};
 enum primary_state ps = line_follow;
 
 int time = 0; // set up timer this is just a place holder
@@ -113,6 +113,7 @@ void fsm(void) {
     int ir_right = ADC1BUF10; // pin 17
     int ir_top = ADC1BUF9; // pin 18
     switch(ps) {
+        // Adam 11/24
         case(line_follow):
             if (ir_right > ir_thresh && !sample_recieved) { // identify if sample is ready to be recieved
                 ps = retrieve_sample;
@@ -123,27 +124,35 @@ void fsm(void) {
                 // idk how long to turn for, we'll have to figure this out, maybe use arcade drive?
                 ps = intersection;
             }
-            else if (sharp_right > right_sharp_thresh) { // wall or bin detected on right
-                drive(turn_speed, -turn_speed);
-                stepsTaken = 0;
-                ps = check_wall;
+            // else if (sharp_right > right_sharp_thresh) { // wall or bin detected on right
+            //     if (sample_recieved && !canyon_navigated && !sample_deposited) {
+            //         drive(turn_speed, -turn_speed);
+            //         stepsTaken = 0;
+            //         ps = check_wall;
+            //     }
+            else if (sharp_right > return_sharp_thresh && !sample_deposited) { // sensed an object close enough to be the ball bins
+                ps = return_sample;
+            }
+            else if (sharp_right > right_sharp_thresh && (!qrd_right && !qrd_left && !qrd_center) && !canyon_navigated) { // sensed an object close enough to be the canyon wall and no more line
+                ps = canyon_navigation;
             }
             else {line_following_fsm();}
             break;
         
+        // Adam 11/24
         case (canyon_navigation): // switch to line following if any track qrd senses the line
             if (qrd_left >= line_qrd_thresh || qrd_right >= line_qrd_thresh || qrd_center >= line_qrd_thresh || qrd_int >= line_qrd_thresh) {
-                if (sharp_right > right_sharp_thresh) {drive(-turn_speed, turn_speed);} // turn left if wall on right
-                else {drive(-turn_speed, turn_speed);} // turn right if no wall on right
+                // will need to drive some distanceto center over line --consider adding a function to do this as it has to be done at least twice
+                if (sharp_right > right_sharp_thresh) {ps = align_left;} // turn left if wall on right
+                else {ps = align_right;} // turn right if no wall on right
                 stepsTaken = 0;
-                while (stepsTaken < steps_in_turn) {} // this is here to allow the robot to turn without exiting the function
-                drive(full_speed, full_speed); // return to forward drive
-                ps = line_follow;
+                drive(full_speed, full_speed);
                 canyon_navigated = 1; // notes that the canyon portion is complete
             }
             else if (canyon_navigation_fsm(stepsTaken)) {stepsTaken = 0;} // will not run canyon nav if the QRDs pick up the line
             break;
 
+        // Adam 11/24
         case(retrieve_sample):
             int cs = CollectSample(stepsTaken, time);
             if (cs == 1) {
@@ -156,6 +165,7 @@ void fsm(void) {
             }
             break;
 
+        // Adam 11/24
         case(return_sample):
             int rs = ReturnSample(stepsTaken, time);
             if (rs == 1) {
@@ -168,6 +178,7 @@ void fsm(void) {
             }
             break;
 
+        // Adam 11/24
         case(satellite_comm):
             if (sharp_front >= close_sharp_thresh) {
                 drive(0, 0);
@@ -176,26 +187,55 @@ void fsm(void) {
             else {line_following_fsm;}
             break;
 
-        case(check_wall):
-            if (stepsTaken >= steps_in_turn) {
-                if (sharp_front >= front_sharp_thresh) {ps = canyon_navigation;}
-                else {ps = return_sample;}
-                drive(-turn_speed, turn_speed); // return to facing forward
+        // case(check_wall):
+        //     if (stepsTaken >= steps_in_turn) {
+        //         if (sharp_front >= front_sharp_thresh) {ps = canyon_navigation;}
+        //         else {ps = return_sample;}
+        //         drive(-turn_speed, turn_speed); // return to facing forward
+        //         stepsTaken = 0;
+        //         while (stepsTaken < steps_in_turn) {} // I couldn't think of a better way to do this lol
+        //         drive(full_speed, full_speed);
+        //     }
+        //     break;
+
+        // Adam 11/24
+        case(intersection):
+            int inter = return_to_line(left, stepsTaken);
+            if (inter == 1) {
                 stepsTaken = 0;
-                while (stepsTaken < steps_in_turn) {} // I couldn't think of a better way to do this lol
-                drive(full_speed, full_speed);
+            }
+            else if (inter == 2) {
+                if (stepsTaken >= steps_in_curve) {
+                    if (sample_recieved && sample_deposited && canyon_navigated) { // this is the statement to check if the course is complete
+                        ps = satellite_comm;
+                    }
+                    else {
+                        ps = line_follow;
+                        drive(full_speed, full_speed);
+                    }
+                }
             }
             break;
-
-        case(intersection):
-            if (stepsTaken >= steps_in_curve) {
-                if (sample_recieved && sample_deposited && canyon_navigated) { // this is the statement to check if the course is complete
-                    ps = satellite_comm;
-                }
-                else {
-                    ps = line_follow;
-                    drive(full_speed, full_speed);
-                }
+        
+        // Adam 11/24
+        case(align_right):
+            int ar = return_to_line(right, stepsTaken);
+            if (ar == 1) {
+                stepsTaken = 0;
+            }
+            else if (ar == 2) {
+                ps = line_follow;
+            }
+            break;
+        
+        //Adam 11/24
+        case(align_left):
+            int al = return_to_line(left, stepsTaken);
+            if (al == 1) {
+                stepsTaken = 0;
+            }
+            else if (al == 2) {
+                ps = line_follow;
             }
             break;
 }

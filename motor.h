@@ -7,4 +7,6 @@ void drive_mps(float left_ms, float right_ms);
 void arcade_drive(float velocity, float turn_rate);
     // velocity in m/s, turn_rate in rad/s - assumed left turn positive 
     // base velocity, +- r*w, where r = IWD/2, depending on L/R
+enum return_direction {right, left};
+int return_to_line(enum return_direction, int step);
 #endif

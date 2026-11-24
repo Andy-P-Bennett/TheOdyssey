@@ -6,7 +6,7 @@
 #define TIME_THRESH 100 // I haven't done the calculations for this or set the timere up yet +++unique to this function+++
 #define steps_to_return 500 // I don't know what this should be, I wasn't able to measure it
 
-// need to include a line in the main function to run the CollectSample function when the right IR sensor is high
+
 enum steps cur_step_col = stop_movement; // state of collection
 int CollectSample(int steps_taken, int time) {
     switch (cur_step_col) {
@@ -47,7 +47,7 @@ int CollectSample(int steps_taken, int time) {
             }
             return 0;
         
-        case (return_to_line):
+        case (drive_to_line):
             if (ADC1BUF13 >= line_qrd_thresh) {
                 drive(-turn_speed, turn_speed); // turn left, this could be adjusted so the robot roughly rotates about the center qrd
                 cur_step_col = reorientate;
@@ -56,24 +56,24 @@ int CollectSample(int steps_taken, int time) {
             return 0;
         
         case (reorientate):
-            if (steps_taken >= steps_in_turn) {
-                drive(full_speed, full_speed);
-                return 2; // this will end this task
-            }
-            return 0;
+            return return_to_line(left, steps_taken);
     }
 }
 
+// Adam 11/24
 enum steps cur_step_ret = init; // state of sample return
-int ReturnSample(int steps_taken, int time) {
+int ReturnSample(int steps_taken) {
+    int sample_white;
     switch (cur_step_ret) {
         case (init):
             drive(full_speed, full_speed); // move straight to return sample
             cur_step_ret = center_robot; // change to state of turning
+            if(ADC1BUF11 >= sample_qrd_thresh) {sample_white = 1;}
+            else{sample_white = 0;}
             return 0;
 
         case (stop_movement):
-            if (ADC1BUF11 <= sample_qrd_thresh) { // check sample
+            if (!sample_white) { // check sample
                 drive(-turn_speed, turn_speed); // left turn - only 
             }
             else {drive(turn_speed, -turn_speed);} // right turn
@@ -89,7 +89,7 @@ int ReturnSample(int steps_taken, int time) {
         
         case (turn_to_objective):
             if (steps_taken >= steps_in_turn) {
-                drive(full_speed, full_speed); // move straight to collect sample
+                drive(full_speed, full_speed); // move straight to drop sample
                 cur_step_ret = drive_to_objective; // change to state of forward motion
                 return 1; // reset step counting
             }
@@ -98,32 +98,21 @@ int ReturnSample(int steps_taken, int time) {
         case (drive_to_objective):
             if (steps_taken >= steps_to_return) {
                 drive(0, 0);
-                cur_step_ret = wait;
+                cur_step_ret = drive_to_line;
                 return 1; // reset timer
             }
             return 0;
         
-        case (wait):
-            if (time >= TIME_THRESH) {
-                drive(-full_speed, -full_speed); // reverse robot
-                cur_step_ret = return_to_line; // change to state of returning to the line
-                return 1; // reset step counting
-            }
-            return 0;
-        
-        case (return_to_line):
+        case (drive_to_line):
             if (ADC1BUF13 >= line_qrd_thresh) {
-                drive(-turn_speed, turn_speed); // turn left, this could be adjusted so the robot roughly rotates about the center qrd
+                drive(full_speed, full_speed); // turn left, this could be adjusted so the robot roughly rotates about the center qrd
                 cur_step_ret = reorientate;
                 return 1;
             }
             return 0;
         
-        case (reorientate):
-            if (steps_taken >= steps_in_turn) {
-                drive(full_speed, full_speed);
-                return 2; // this will end the task
-            }
-            return 0;
+        case  (reorientate):
+            if (sample_white) {return return_to_line(right, steps_taken);}
+            else {return return_to_line(left, steps_taken);}
     }
 }

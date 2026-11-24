@@ -2,6 +2,7 @@
 #include "motor.h"
 #include <stdlib.h>
 #include <math.h>
+#include "Definitions.h"
 
 #define FCY_HZ 4000000.0f
 #define TIMER_HZ (FCY_HZ/64.0f) // 62.5 kHz with 1:64 prescaler
@@ -65,4 +66,24 @@ void arcade_drive(float velocity, float turn_rate) {
     // base velocity, +- r*w, where r = IWD/2, depending on L/R
     drive_mps(velocity - turn_rate * (IWD/2.0f), 
               velocity + turn_rate * (IWD/2.0f));
+}
+
+enum {turn, align} cur = align; // turn: from perp to parallel to line, align: move so wheels are over line instead of the QRDs
+int alignmentSteps = 509.296 * stepsize; // 7" from qrd to wheel, 3.5" dia. wheel
+int return_to_line(enum return_direction dir, int stepsTaken) {//assume qrds are on line and needs to rotate 90 and end on line
+    switch(cur) {
+        case(align):
+            if (stepsTaken >= alignmentSteps){
+                if (dir == right){drive(turn_speed, -turn_speed);}
+                else {drive(-turn_speed, turn_speed);}
+                cur = turn;
+                return 1;
+            }
+        
+        case(turn):
+            if (stepsTaken >= steps_in_turn) {
+                cur = align;
+                return 2;
+            }
+    }
 }
