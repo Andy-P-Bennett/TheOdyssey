@@ -74,7 +74,7 @@ int return_to_line(enum return_direction dir, int stepsTaken) {//assume qrds are
     switch(cur) {
         case(align):
             if (stepsTaken >= alignmentSteps){
-                if (dir == right){drive(turn_speed, -turn_speed);}
+                if (dir == right_align){drive(turn_speed, -turn_speed);}
                 else {drive(-turn_speed, turn_speed);}
                 cur = turn;
                 return 1;

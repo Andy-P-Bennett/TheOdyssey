@@ -56,7 +56,7 @@ int CollectSample(int steps_taken, int time) {
             return 0;
         
         case (reorientate):
-            return return_to_line(left, steps_taken);
+            return return_to_line(left_align, steps_taken);
     }
 }
 
@@ -112,7 +112,7 @@ int ReturnSample(int steps_taken) {
             return 0;
         
         case  (reorientate):
-            if (sample_white) {return return_to_line(right, steps_taken);}
-            else {return return_to_line(left, steps_taken);}
+            if (sample_white) {return return_to_line(right_align, steps_taken);}
+            else {return return_to_line(left_align, steps_taken);}
     }
 }
