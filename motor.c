@@ -79,11 +79,13 @@ int return_to_line(enum return_direction dir, int stepsTaken) {//assume qrds are
                 cur = turn;
                 return 1;
             }
+            return 0;
         
         case(turn):
             if (stepsTaken >= steps_in_turn) {
                 cur = align;
                 return 2;
             }
+            return 0;
     }
 }

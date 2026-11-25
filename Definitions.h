@@ -14,7 +14,7 @@
 //threshold values
 #define line_qrd_thresh 500
 #define sample_qrd_thresh 800 // white ball goes low
-#define front_sharp_thresh 100 // 0.32V / 3.3V = (100 / 1024), 40 cm
+#define front_sharp_thresh 202 // 0.65V / 3.3V = (207 / 1024), 20 cm
 // #define right_sharp_thresh 170 // 3.3 * (130 / 1024) = .42V, which is about 30 cm away from the wall, per psc spec sheet
 #define right_sharp_thresh 186 // 0.6V / 3.3V = 186 / 1024, 22 cm
 #define return_sharp_thresh 326 // 3.3 * (326 / 1024) = 1.05V, 12 cm
