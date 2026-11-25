@@ -32,7 +32,7 @@ int CollectSample(int steps_taken, int time) {
             return 0;
 
         case (drive_to_objective):
-            if (ADC1BUF0 >= close_sharp_thresh) { // check sharp sensor to determine distance to drop
+            if (ADC1BUF0 >= highest_sharp_thresh) { // check sharp sensor to determine distance to drop
                 drive(0, 0);
                 cur_step_col = wait;
                 return 1; // reset timer
@@ -63,7 +63,6 @@ int CollectSample(int steps_taken, int time) {
 // Adam 11/24
 enum steps cur_step_ret = init; // state of sample return
 int ReturnSample(int steps_taken) {
-    int sample_white;
     switch (cur_step_ret) {
         case (init):
             drive(full_speed, full_speed); // move straight to return sample

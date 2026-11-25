@@ -48,9 +48,9 @@ void fsm(void) {
     int qrd_center = ADC1BUF13; // pin 7
     int qrd_left = ADC1BUF14; // pin 8
     int qrd_int = ADC1BUF12; // pin 15
-    int qrd_sample = ADC1BUF11; // pin 16
+    // int qrd_sample = ADC1BUF11; // pin 16
     int ir_right = ADC1BUF10; // pin 17
-    int ir_top = ADC1BUF9; // pin 18
+    // int ir_top = ADC1BUF9; // pin 18
 
     int cs; // collect sample
     int rs; // return sample
@@ -125,7 +125,7 @@ void fsm(void) {
 
         // Adam 11/24
         case(satellite_comm):
-            if (sharp_front >= close_sharp_thresh) {
+            if (sharp_front >= highest_sharp_thresh) {
                 drive(0, 0);
                 // start pwm for locating satellite and checkin the top IR sensor
             }

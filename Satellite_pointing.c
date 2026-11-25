@@ -18,7 +18,7 @@ void satellite_comm (void){
 
     int sharp_front = ADC1BUF0;
 
-     if (sharp_front < close_sharp_thresh) {
+     if (sharp_front < highest_sharp_thresh) { // there should be a case to stop driving not a case to keep driving, constantly setting the same value for pwm will cause problems
         drive(full_speed, full_speed); //keep driving forward until close to wall
     }   else {
         drive(0, 0); // stop
